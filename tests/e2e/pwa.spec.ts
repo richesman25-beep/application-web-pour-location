@@ -1,0 +1,22 @@
+import {mkdtempSync,rmSync} from 'node:fs';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {test,expect,chromium} from '@playwright/test';
+const production='http://127.0.0.1:4173';
+test('PWA production : manifeste, icône, service worker, installation et hors connexion',async({request})=>{
+ const profile=mkdtempSync(join(tmpdir(),'lokasyon-pwa-')),context=await chromium.launchPersistentContext(profile,{executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']}),page=await context.newPage();try{
+ const manifestResponse=await request.get(`${production}/manifest.webmanifest`);expect(manifestResponse.ok()).toBe(true);const manifest=await manifestResponse.json();expect(manifest).toMatchObject({id:'/',name:'LOKASYON LAKAY',display:'standalone',scope:'/',start_url:'/dashboard'});expect((await request.get(production+manifest.icons[0].src)).ok()).toBe(true);
+ await page.goto(`${production}/login`);await expect(page.getByRole('heading',{name:'Heureux de vous retrouver'})).toBeVisible();await page.evaluate(()=>navigator.serviceWorker.ready.then(()=>true));await expect.poll(()=>page.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(true);
+ const client=await context.newCDPSession(page);const appManifest=await client.send('Page.getAppManifest');expect(appManifest.errors).toEqual([]);const installability=await client.send('Page.getInstallabilityErrors');expect(installability.installabilityErrors).toEqual([]);
+ const icon=await page.evaluate(async src=>{const image=new Image();image.src=src;await image.decode();return {width:image.naturalWidth,height:image.naturalHeight};},manifest.icons[0].src);expect(icon.width).toBe(icon.height);expect(icon.width).toBeGreaterThanOrEqual(512);expect(manifest.icons[0].sizes).toBe('any');
+ // Simulate the browser event to validate our button's native prompt handling.
+ await page.evaluate(()=>{const event=new Event('beforeinstallprompt',{cancelable:true});Object.assign(event,{prompt:async()=>{(window as any).promptCalled=true;},userChoice:Promise.resolve({outcome:'dismissed'})});window.dispatchEvent(event);});await page.getByRole('button',{name:'Installer l’application',exact:true}).click();expect(await page.evaluate(()=>(window as any).promptCalled)).toBe(true);
+ await page.getByRole('button',{name:'Installer l’application',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();await expect(page.getByRole('dialog')).toContainText('Sur iPhone ou iPad');await page.getByRole('button',{name:'Fermer les instructions d’installation'}).click();await expect(page.getByRole('dialog')).not.toBeVisible();
+ const cached=await page.evaluate(async()=>{const result:string[]=[];for(const name of await caches.keys()){const cache=await caches.open(name);for(const entry of await cache.keys())result.push(new URL(entry.url).pathname);}return result.sort();});expect(cached).toEqual(['/images/app-icon.png','/images/app-icon.svg','/images/logo-lokasyon-lakay.png','/offline.html']);
+ await context.setOffline(true);await page.goto(`${production}/rentals`);await expect(page.getByRole('heading',{name:'Une connexion est nécessaire'})).toBeVisible();expect(await page.getByRole('img',{name:'LOKASYON LAKAY'}).evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);await context.setOffline(false);await page.getByRole('button',{name:'Réessayer'}).click();await expect(page.getByRole('heading',{name:'Heureux de vous retrouver'})).toBeVisible();
+ await page.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));await expect(page.getByRole('button',{name:'Installer l’application',exact:true})).toHaveCount(0);
+ }finally{await context.close();rmSync(profile,{recursive:true,force:true});}
+});
+test('instructions d’installation accessibles et adaptées aux petites tailles',async({page})=>{
+ for(const width of [360,390,768,1024,1440]){await page.setViewportSize({width,height:900});await page.goto('/login');await page.getByRole('button',{name:'Installer l’application',exact:true}).click();await expect(page.getByRole('dialog')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).not.toBeVisible();}
+});

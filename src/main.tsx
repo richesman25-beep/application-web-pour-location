@@ -1,3 +1,4 @@
+import {registerServiceWorker} from './services/pwaService';
 import {LoadingScreen} from './components/Brand';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
@@ -21,3 +22,5 @@ function Admin({children}:{children:React.ReactNode}){return useApp().role==='ad
 function LoginRoute(){const {user,ready}=useApp();if(!ready)return <LoadingScreen message="Chargement…"/>;return user?<Navigate to="/dashboard" replace/>:<Login/>;}
 function App(){return <BrowserRouter><Routes><Route path="/login" element={<LoginRoute/>}/><Route path="/super-admin" element={<SuperAdminRoute/>}/><Route element={<Protected/>}><Route path="/dashboard" element={<Dashboard/>}/>{(['customers','assets','categories'] as const).map(kind=><React.Fragment key={kind}><Route path={`/${kind}`} element={kind==='categories'?<Admin><Records kind={kind}/></Admin>:<Records kind={kind}/>}/><Route path={`/${kind}/new`} element={kind==='categories'?<Admin><RecordForm kind={kind}/></Admin>:<RecordForm kind={kind}/>}/><Route path={`/${kind}/:id`} element={kind==='categories'?<Admin><RecordForm kind={kind}/></Admin>:<RecordForm kind={kind}/>}/></React.Fragment>)}<Route path="/rentals" element={<RentalList/>}/><Route path="/rentals/new" element={<NewRental/>}/><Route path="/rentals/:id" element={<RentalDetail/>}/><Route path="/returns" element={<RentalList returns/>}/><Route path="/proformas" element={<Proformas/>}/><Route path="/proformas/new" element={<ProformaEditor/>}/><Route path="/proformas/:id/edit" element={<ProformaEditor/>}/><Route path="/proformas/:id" element={<ProformaDetail/>}/><Route path="/payments" element={<Payments/>}/><Route path="/invoices" element={<Invoices/>}/><Route path="/invoices/:id" element={<Invoice/>}/><Route path="/settings" element={<Admin><Settings/></Admin>}/><Route path="/search" element={<Search/>}/></Route><Route path="*" element={<Navigate to="/dashboard" replace/>}/></Routes></BrowserRouter>;}
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><Provider><App/></Provider></React.StrictMode>);
+
+registerServiceWorker();

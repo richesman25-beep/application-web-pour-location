@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "LOKASYON LAKAY",
+  "short_name": "Lokasyon Lakay",
+  "description": "Gérez vos clients, biens, locations, paiements et factures.",
+  "lang": "fr",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f7fc",
+  "theme_color": "#092664",
+  "icons": [
+    {
+      "src": "/images/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/app-icon.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

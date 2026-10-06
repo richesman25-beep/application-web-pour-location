@@ -1,3 +1,4 @@
+import {InstallApp} from '../components/InstallApp';
 import {Brand} from '../components/Brand';
 import {useApp} from '../contexts/AppContext';
 import {useState} from 'react';
@@ -33,6 +34,7 @@ export function Login(){
     <div className="auth-switch"><span>{register?'Vous avez déjà votre espace ?':'Une nouvelle entreprise à gérer ?'}</span><button className="link" onClick={()=>setRegister(!register)}>{register?'J’ai déjà un compte':'Créer un compte administrateur'}<ArrowUpRight size={15} aria-hidden="true"/></button></div>
    </div>
    <p className="auth-footer">Simple à utiliser. Pensé pour votre quotidien.<span>HTG & USD · Ordinateur & mobile</span></p>
+   <InstallApp/>
   </section>
  </main>;
 }

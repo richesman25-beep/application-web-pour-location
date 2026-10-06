@@ -115,3 +115,5 @@ Chaque document inclut `organizationId`. Le registre `superAdmins/{uid}` est en 
 La liste des clients et biens est paginée dans l'interface ; les abonnements chargent actuellement les collections de l'organisation entière. Pour de gros volumes, remplacez-les par des requêtes paginées/indexées côté Firestore. Les textes sont en français ; une couche de traduction pourra être ajoutée ultérieurement. La PWA n'est pas activée.
 
 Les factures pro forma (création, impression/PDF et conversion en location) sont décrites dans [PROFORMA.md](PROFORMA.md).
+
+L’installation sur téléphone et ordinateur est décrite dans [INSTALLATION.md](INSTALLATION.md).

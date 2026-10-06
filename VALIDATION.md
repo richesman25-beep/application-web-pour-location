@@ -69,3 +69,11 @@ Palette harmonisée avec le logo : bleu marine, bleu lumineux et accents dorés.
 Build réussi. Parcours navigateur connexion, pro forma, location et super-admin réussis, incluant les vérifications sur cinq largeurs. Le premier passage super-admin a révélé un sélecteur de test ambigu dans une liste de plusieurs comptes ; il cible maintenant le compte recherché, puis le parcours complet a réussi. Vérifications supplémentaires : chargement effectif des deux polices locales et inspection du tableau de bord sur ordinateur et téléphone.
 
 Publication du code sur GitHub ; le déploiement Netlify reste à effectuer ou à vérifier dans Netlify.
+
+## Application installable — 6 octobre 2026
+
+Manifeste PWA, icône du logo, métadonnées iOS, service worker et bouton « Installer l’application » ajoutés sur la connexion, dans le menu et dans les Paramètres. Le service worker de production conserve uniquement la page hors connexion et les icônes ; les données métier et requêtes Firebase restent sur le réseau.
+
+Build réussi. Les parcours existants connexion et location/PDF ont réussi. Deux nouveaux tests PWA réussis : contrôle Chrome du manifeste et de l’installabilité sans erreur dans un profil normal, décodage de l’icône, activation du service worker, traitement simulé de la demande native, instructions accessibles sur cinq largeurs, écran hors connexion, reconnexion et masquage du bouton après événement d’installation. Le premier contrôle a identifié une icône PNG trop grande pour le sélecteur Chrome ; une représentation SVG intégrant le même PNG a corrigé la compatibilité. La navigation privée est exclue du contrôle d’installation, comme dans Chrome.
+
+Installation finale sur un téléphone réel et domaine public à vérifier après déploiement Netlify. Le contrôle navigateur local ne constitue pas une installation effectuée sur l’appareil de l’utilisateur. Guide : INSTALLATION.md.
