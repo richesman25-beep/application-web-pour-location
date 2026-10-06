@@ -36,3 +36,9 @@ test('les pro forma restent isolées, sans paiement et protégées après conver
  await assertFails(updateDoc(target,{quantity:3}));await assertFails(deleteDoc(doc(env.authenticatedContext('owner').firestore(),'organizations','owner','proformas','PF-1')));
  const cancelled=doc(db,'organizations','owner','proformas','PF-2');await assertSucceeds(setDoc(cancelled,quote));await assertSucceeds(updateDoc(cancelled,{status:'Annulée'}));await assertFails(updateDoc(cancelled,{status:'Brouillon'}));
 });
+test('la comptabilité est réservée aux admins et ses écritures passent uniquement par le serveur',async()=>{
+ await env.withSecurityRulesDisabled(async c=>{for(const name of ['accountingAccounts','accountingEntries','accountingPeriods','accountingAudit','accountingSources'])await setDoc(doc(c.firestore(),'organizations','owner',name,'test'),{organizationId:'owner',date:'2026-10-06'});});
+ const owner=env.authenticatedContext('owner').firestore(),employee=env.authenticatedContext('employee').firestore();
+ for(const name of ['accountingAccounts','accountingEntries','accountingPeriods','accountingAudit','accountingSources']){const target=doc(owner,'organizations','owner',name,'test');await assertSucceeds(getDoc(target));await assertFails(getDoc(doc(employee,'organizations','owner',name,'test')));await assertFails(getDoc(doc(env.authenticatedContext('other').firestore(),'organizations','owner',name,'test')));await assertFails(setDoc(target,{organizationId:'owner'}));await assertFails(deleteDoc(target));}
+ await assertFails(setDoc(doc(owner,'organizations','owner','counters','accountingJournal'),{organizationId:'owner',value:999}));await assertSucceeds(getDoc(doc(env.authenticatedContext('super').firestore(),'organizations','owner','accountingEntries','test')));
+});

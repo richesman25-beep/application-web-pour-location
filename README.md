@@ -1,4 +1,4 @@
-# Lokasyon — Gestion de location
+# LOKASYON LAKAY — Gestion de location
 
 Application Web responsive en français pour Haïti : React, TypeScript, Vite, Tailwind, React Router et Firebase (Authentication, Firestore, Storage). Les formulaires sauvegardent dans Firestore ; aucun stockage fictif n'est utilisé.
 
@@ -117,3 +117,7 @@ La liste des clients et biens est paginée dans l'interface ; les abonnements ch
 Les factures pro forma (création, impression/PDF et conversion en location) sont décrites dans [PROFORMA.md](PROFORMA.md).
 
 L’installation sur téléphone et ordinateur est décrite dans [INSTALLATION.md](INSTALLATION.md).
+
+## Comptabilité
+
+Les administrateurs disposent du menu **Comptabilité** : plan de comptes, écritures débit/crédit, import des factures et paiements sans doublons, grand livre, balance, bilan, résultat, exports CSV, impression et clôtures mensuelles. HTG et USD restent séparés. Consultez [COMPTABILITE.md](COMPTABILITE.md) pour la prise en main et le déploiement des fonctions Firebase et des règles nécessaires.

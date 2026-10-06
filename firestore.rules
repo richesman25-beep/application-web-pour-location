@@ -13,6 +13,7 @@ service cloud.firestore {
   match /organizations/{org} {
    function orgActive() { return exists(/databases/$(database)/documents/organizations/$(org)) && get(/databases/$(database)/documents/organizations/$(org)).data.get('status','active') != 'suspended'; }
    function member() { return accountEnabled() && siteAvailable() && orgActive() && exists(/databases/$(database)/documents/organizations/$(org)/users/$(request.auth.uid)) && get(/databases/$(database)/documents/organizations/$(org)/users/$(request.auth.uid)).data.get('disabled',false) != true; }
+   function accountingCollection(name) { return name in ['accountingAccounts','accountingEntries','accountingPeriods','accountingAudit','accountingSources']; }
    function admin() { return member() && get(/databases/$(database)/documents/organizations/$(org)/users/$(request.auth.uid)).data.role == 'admin'; }
    allow create: if accountEnabled() && registrationOpen() && org == request.auth.uid && request.resource.data.organizationId == org && request.resource.data.keys().hasOnly(['organizationId','name','status','createdAt']) && request.resource.data.get('status','active') == 'active';
    allow read: if superAdmin() || member() || (accountEnabled() && request.auth.uid == org);
@@ -34,9 +35,9 @@ service cloud.firestore {
     );
    }
    match /{collection}/{id} {
-    allow read: if collection != 'users' && (superAdmin() || member());
-    allow create, update: if collection != 'users' && member() && request.resource.data.organizationId == org && (collection in ['customers','assets','rentals','payments','invoices','counters'] || (admin() && collection in ['categories','settings']));
-    allow delete: if collection != 'users' && collection != 'proformas' && admin();
+    allow read: if collection != 'users' && (superAdmin() || (accountingCollection(collection) ? admin() : member()));
+    allow create, update: if collection != 'users' && (collection != 'counters' || id != 'accountingJournal') && member() && request.resource.data.organizationId == org && (collection in ['customers','assets','rentals','payments','invoices','counters'] || (admin() && collection in ['categories','settings']));
+    allow delete: if collection != 'users' && collection != 'proformas' && !accountingCollection(collection) && (collection != 'counters' || id != 'accountingJournal') && admin();
    }
   }
  }

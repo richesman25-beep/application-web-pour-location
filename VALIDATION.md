@@ -77,3 +77,18 @@ Manifeste PWA, icône du logo, métadonnées iOS, service worker et bouton « In
 Build réussi. Les parcours existants connexion et location/PDF ont réussi. Deux nouveaux tests PWA réussis : contrôle Chrome du manifeste et de l’installabilité sans erreur dans un profil normal, décodage de l’icône, activation du service worker, traitement simulé de la demande native, instructions accessibles sur cinq largeurs, écran hors connexion, reconnexion et masquage du bouton après événement d’installation. Le premier contrôle a identifié une icône PNG trop grande pour le sélecteur Chrome ; une représentation SVG intégrant le même PNG a corrigé la compatibilité. La navigation privée est exclue du contrôle d’installation, comme dans Chrome.
 
 Installation finale sur un téléphone réel et domaine public à vérifier après déploiement Netlify. Le contrôle navigateur local ne constitue pas une installation effectuée sur l’appareil de l’utilisateur. Guide : INSTALLATION.md.
+
+## Comptabilité en partie double — 6 octobre 2026
+
+Ajout d’un espace réservé aux administrateurs : 27 comptes de départ, journal en centimes entiers, écritures manuelles équilibrées, import des factures et paiements par lots sans doublons, ajustements de factures, contrepassations conservant l’original, grand livre, balance, bilan et résultat, impression, CSV, clôtures mensuelles et historique. Les devises HTG et USD restent séparées. Les écritures et traces comptables sont protégées contre les écritures directes du navigateur.
+
+- Compilation TypeScript/Vite réussie.
+- 26 tests unitaires réussis, dont 6 sur les rapports comptables : résultat à la facture, cautions au passif, séparation des devises, soldes antérieurs, contrepassations et export CSV.
+- 11 tests serveur réussis, dont 6 sur les montants exacts, les comptes actifs, les débits/crédits, les dates et les encaissements.
+- 12 tests des règles Firestore réussis : lecture comptable réservée, refus des modifications directes du journal, des comptes, clôtures, imports, historique et compteur.
+- Test d’intégration des fonctions comptables réussi : accès employé et autre organisation refusé, compte suspendu, plan idempotent, import et ajustements sans doublons, modification d’un paiement signalée, validation déséquilibrée refusée, demandes concurrentes idempotentes, contrepassation, clôture et réouverture.
+- Parcours navigateur comptable réussi : initialisation, import des six pièces de démonstration, second import inchangé, saisie équilibrée, CSV réellement téléchargé, contrepassation, séparation HTG/USD, compte ajouté et neuf onglets contrôlés sur cinq largeurs.
+
+Ces vérifications utilisent uniquement le projet fictif `demo-lokasyon`. Aucun déploiement Firebase ou Netlify de production n’a été effectué. Instructions de déploiement et limites fonctionnelles : COMPTABILITE.md.
+
+Régression navigateur : connexion, pro forma/PDF/impression, installation PWA, parcours de location/paiement/retour et responsive réussis. Le test super-admin a révélé une navigation avant la fin de la connexion ; ajout d’une attente de la redirection authentifiée dans le test, puis parcours super-admin complet réussi. Aucun changement métier n’a été nécessaire pour cette correction de test.

@@ -4,10 +4,11 @@ import {collection,doc,onSnapshot,setDoc,getDoc} from 'firebase/firestore';
 import {auth,db} from '../firebase';
 import {defaults,type Row} from '../types';
 import {siteDefaults,type SiteSettings} from '../types/platform';
-type State={user:User|null;ready:boolean;loading:boolean;org:string;role:string;superAdmin:boolean;accessError:string;data:Record<string,Row[]>;settings:typeof defaults;site:SiteSettings;error:string;logout:()=>Promise<void>};
+type State={user:User|null;ready:boolean;loading:boolean;org:string;role:string;superAdmin:boolean;accessError:string;data:Record<string,Row[]>;settings:typeof defaults;site:SiteSettings;error:string;accountingReady:boolean;accountingError:string;logout:()=>Promise<void>};
 const Context=createContext<State>(null!);
 export function Provider({children}:{children:ReactNode}){
  const [user,setUser]=useState<User|null>(null),[ready,setReady]=useState(false),[loading,setLoading]=useState(true),[role,setRole]=useState(''),[superAdmin,setSuperAdmin]=useState(false),[accessError,setAccessError]=useState(''),[error,setError]=useState(''),[data,setData]=useState<Record<string,Row[]>>({}),[settings,setSettings]=useState(defaults),[site,setSite]=useState(siteDefaults);
+ const [accountingReady,setAccountingReady]=useState(false),[accountingError,setAccountingError]=useState('');
  const org=user?(sessionStorage.getItem('organizationId')||user.uid):'';
  useEffect(()=>onSnapshot(doc(db,'platform','settings'),s=>setSite({...siteDefaults,...s.data()}),()=>{}),[]);
  useEffect(()=>onAuthStateChanged(auth,u=>{setLoading(!!u);setUser(u);setReady(true);setData({});setSettings(defaults);setRole('');setSuperAdmin(false);setAccessError('');setError('');}),[]);
@@ -43,6 +44,14 @@ export function Provider({children}:{children:ReactNode}){
   }catch(e){if(alive){clearTimeout(timeout);setError((e as Error).message);setLoading(false);}}})();
   return()=>{alive=false;clearTimeout(timeout);stops.forEach(s=>s());};
  },[user,org]);
- return <Context.Provider value={{user,ready,loading,org,role,superAdmin,accessError,data,settings,site,error,logout:async()=>{sessionStorage.removeItem('organizationId');await signOut(auth);}}}>{children}</Context.Provider>;
+ useEffect(()=>{
+  setAccountingError('');setAccountingReady(false);
+  const names=['accountingAccounts','accountingEntries','accountingPeriods','accountingAudit'];
+  if(!user||role!=='admin'){setData(old=>Object.fromEntries(Object.entries(old).filter(([name])=>!names.includes(name))));return;}
+  let alive=true;const loaded=new Set<string>(),timeout=setTimeout(()=>{if(alive)setAccountingError('La comptabilité ne répond pas. Vérifiez les règles Firestore et le réseau.');},15000);
+  const stops=names.map(name=>onSnapshot(collection(db,'organizations',org,name),snapshot=>{if(!alive)return;setData(old=>({...old,[name]:snapshot.docs.map(d=>({...d.data(),id:d.id} as Row))}));loaded.add(name);if(loaded.size===names.length){clearTimeout(timeout);setAccountingReady(true);setAccountingError('');}},e=>{if(alive){clearTimeout(timeout);setAccountingError(e.message);}}));
+  return()=>{alive=false;clearTimeout(timeout);stops.forEach(stop=>stop());};
+ },[user,org,role]);
+ return <Context.Provider value={{user,ready,loading,org,role,superAdmin,accessError,data,settings,site,error,accountingReady,accountingError,logout:async()=>{sessionStorage.removeItem('organizationId');await signOut(auth);}}}>{children}</Context.Provider>;
 }
 export const useApp=()=>useContext(Context);
