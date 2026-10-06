@@ -61,3 +61,11 @@ Les tests de règles effacent les données de l’émulateur ; ne les lancez pas
 Logo reproduit depuis la référence fournie en PNG transparent (1448 × 1086), conservé dans `public/images/logo-lokasyon-lakay.png`. Intégration dans la connexion, le menu latéral, l’en-tête mobile, l’espace super-admin et les écrans de chargement, y compris le contenu HTML initial. Titre et noms par défaut mis à jour ; les noms d’entreprise déjà personnalisés restent enregistrés dans Firebase.
 
 Build réussi. Tests navigateur connexion et parcours de location existant réussis, avec contrôle du responsive sur cinq largeurs. Vérification complémentaire sans JavaScript : logo initial chargé et titre LOKASYON LAKAY correct. Aucun déploiement Netlify effectué depuis cet environnement.
+
+## Présentation bleu et or — 6 octobre 2026
+
+Palette harmonisée avec le logo : bleu marine, bleu lumineux et accents dorés. Typographie locale Manrope pour les textes et Plus Jakarta Sans pour les titres, avec licences OFL incluses. Cartes, navigation, formulaires, connexion, super-admin et chargement harmonisés ; styles d’impression sobres préservés. Aucun changement aux opérations métier.
+
+Build réussi. Parcours navigateur connexion, pro forma, location et super-admin réussis, incluant les vérifications sur cinq largeurs. Le premier passage super-admin a révélé un sélecteur de test ambigu dans une liste de plusieurs comptes ; il cible maintenant le compte recherché, puis le parcours complet a réussi. Vérifications supplémentaires : chargement effectif des deux polices locales et inspection du tableau de bord sur ordinateur et téléphone.
+
+Publication du code sur GitHub ; le déploiement Netlify reste à effectuer ou à vérifier dans Netlify.

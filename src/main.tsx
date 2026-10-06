@@ -14,6 +14,7 @@ import {Settings} from './pages/Settings';
 import {Search} from './pages/Search';
 import {SuperAdmin} from './pages/SuperAdmin';
 import './style.css';
+import './theme.css';
 function Protected(){const {user,ready,loading,error,logout,superAdmin,site,accessError}=useApp();if(!ready)return <LoadingScreen message="Chargement…"/>;if(!user)return <Navigate to="/login" replace/>;const blocked=accessError||(!superAdmin&&site.maintenance?(site.message||'Le site est en maintenance. Revenez plus tard.'):'');if(blocked||error)return <div className="padded"><h1>Accès indisponible</h1><p className="error">{blocked||error}</p>{site.supportEmail&&<p>Support : {site.supportEmail}</p>}{superAdmin&&<a className="button" href="/super-admin">Administration du site</a>}<button onClick={()=>window.location.reload()}>Réessayer</button><button onClick={logout}>Déconnexion</button></div>;if(loading)return <LoadingScreen/>;return <Layout/>;}
 function SuperAdminRoute(){const {user,ready,loading,superAdmin,logout}=useApp();if(!ready||(user&&loading&&!superAdmin))return <LoadingScreen message="Vérification des autorisations…"/>;if(!user)return <Navigate to="/login" replace/>;return superAdmin?<SuperAdmin/>:<div className="padded"><h1>Accès réservé</h1><p>Votre compte ne possède pas le rôle super-administrateur.</p><a className="button" href="/dashboard">Retour à mon entreprise</a><button onClick={logout}>Déconnexion</button></div>;}
 function Admin({children}:{children:React.ReactNode}){return useApp().role==='admin'?children:<Navigate to="/dashboard" replace/>;}
