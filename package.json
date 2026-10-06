@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "emulators": "XDG_CONFIG_HOME=\"$PWD/.cache/config\" FIREBASE_EMULATORS_PATH=\"$PWD/.cache/firebase\" firebase emulators:start --project demo-lokasyon --only auth,firestore,storage",
-    "test": "vitest run tests/pricing.test.ts",
+    "test": "vitest run tests/*.test.ts",
     "test:e2e": "PLAYWRIGHT_BROWSERS_PATH=\"$PWD/.cache/playwright\" playwright test"
   },
   "dependencies": {

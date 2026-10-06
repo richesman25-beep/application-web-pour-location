@@ -26,6 +26,16 @@ Ouvrez le navigateur à l'adresse affichée par Vite (port 5173). Par défaut l'
 
 Les données de démonstration comprennent Jean Pierre, Marie Joseph et Samuel Louis ; Toyota RAV4, génératrice, Power Bank, chaises, tente et appartement ; des locations actives, terminées, partiellement payées et en retard. Testez une nouvelle location, un paiement complémentaire, la facture PDF puis le retour du bien. Les données survivent aux rechargements du navigateur tant que les émulateurs restent ouverts. Elles sont remises à zéro au redémarrage des émulateurs ; export/import Firebase peut être utilisé pour les conserver.
 
+## Publication sur Netlify
+
+Les builds publiés (`npm run build`) utilisent maintenant directement le projet Firebase `mon-projet-ia-891e5` fourni, même sans variables Netlify. Ils ne se connectent jamais aux ports d'émulation. Le mode `npm run dev` reste local par défaut pour les tests.
+
+La configuration `netlify.toml` fournit la commande de compilation, le dossier `dist` et les redirections React Router. Pour un site Netlify connecté à GitHub, déployez la dernière version de `main`. Pour une publication manuelle, reconstruisez avec `npm run build` puis déposez le nouveau dossier `dist`.
+
+Si vous avez déjà défini des variables `VITE_FIREBASE_*` sur Netlify ou dans `.env.local`, elles remplacent les valeurs du projet par défaut : supprimez les anciennes valeurs `demo-lokasyon` / `demo-key` ou renseignez celles du vrai projet. Les variables ne sont prises en compte qu'à la compilation.
+
+Dans Firebase, activez Authentication → Email/Password, ajoutez `lokasyonlakay.netlify.app` aux domaines autorisés, créez Firestore et Storage puis installez les règles fournies. Ces réglages de la console ne peuvent pas être activés par le code du navigateur. Les erreurs de connexion indiquent désormais le problème renvoyé par Firebase. Le champ d'organisation n'apparaît plus pendant la création du compte administrateur.
+
 ## Utiliser votre projet Firebase
 
 Le fichier `.env.firebase.example` contient la configuration Web publique fournie pour `mon-projet-ia-891e5`. Copiez-le vers `.env.local` puis redémarrez Vite. Le fichier `.env.local` est ignoré par Git. Il ne doit jamais contenir une clé privée de compte de service : toute variable préfixée `VITE_` est exposée au navigateur.

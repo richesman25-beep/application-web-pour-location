@@ -24,3 +24,9 @@ Le projet Firebase réel `mon-projet-ia-891e5` n'a pas été modifié. Son activ
 Après autorisation du domaine de téléchargement, arrêtez le processus d'authentification seul si celui-ci fonctionne encore, puis lancez `npm run emulators` pour démarrer les trois services. Dans un autre terminal, lancez `npm run dev`, puis `npm run test:e2e`. Tous les tests E2E doivent être exécutés en mode émulateurs ; retirez temporairement `.env.local` s'il configure le projet réel.
 
 La publication de l'environnement cloud et celle du site n'ont pas été effectuées.
+
+## Correction de la connexion Netlify
+
+Le build publié utilise désormais le vrai projet Firebase par défaut. Des tests de configuration vérifient le mode production, le mode local, les surcharges et les messages d’erreur Authentication. Aucun compte de production n’est créé par ces tests. L’activation Email/Password, les domaines autorisés, Firestore et Storage restent des prérequis dans la console Firebase.
+
+Validation de cette correction : compilation réussie ; 14 tests unitaires réussis ; bundle de production vérifié dans Chromium (SDK Authentication dirigé vers Google, aucun accès aux ports des émulateurs, champ organisation masqué à l’inscription, message Email/Password correct). La requête Authentication du test navigateur a été interceptée : ce contrôle valide le raccordement et le traitement d’erreur, pas l’activation effective du projet réel.
