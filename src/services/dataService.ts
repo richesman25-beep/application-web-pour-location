@@ -2,6 +2,7 @@ import {collection,doc,runTransaction,setDoc,writeBatch} from 'firebase/firestor
 import {ref,uploadBytes,getDownloadURL} from 'firebase/storage';
 import {db,storage} from '../firebase';
 import {pricing,duration} from './pricingService';
+import {assertConvertible} from './proformaPolicy';
 import type {Row} from '../types';
 const year=()=>new Date().getFullYear();
 const path=(org:string,name:string,id:string)=>doc(db,'organizations',org,name,id);
@@ -16,8 +17,9 @@ export async function saveRow(org:string,name:string,input:any,id?:string){
  const code=generated(({customers:'CLI',assets:'BIEN',categories:'CAT'} as any)[name]||name,n);
  t.set(counter,{value:n,organizationId:org});t.set(path(org,name,code),{...input,code:input.code||code,organizationId:org,createdAt:new Date().toISOString()});return code;});
 }
-export async function createRental(org:string,input:any){
+export async function createRental(org:string,input:any,proformaId?:string){
  return runTransaction(db,async t=>{
+ if(proformaId){const q=(await t.get(path(org,'proformas',proformaId))).data();if(q?.status==='Convertie')return q.rentalId as string;assertConvertible(q);const fields=['assetId','customerId','quantity','start','end','rate','unit','discount','fees','deposit','currency','notes'];input={...Object.fromEntries(fields.map(k=>[k,q![k]])),paid:0,method:'Cash HTG',invoicePrefix:input.invoicePrefix,proformaId};}
  const ar=path(org,'assets',input.assetId),a=(await t.get(ar)).data();
  const customer=(await t.get(path(org,'customers',input.customerId))).data();
  const rc=path(org,'counters','rentals'),pc=path(org,'counters','payments');const rs=await t.get(rc),ps=await t.get(pc);
@@ -28,6 +30,7 @@ export async function createRental(org:string,input:any){
  const id=generated(`LOC-${year()}`,(rs.data()?.value||0)+1),invoice=id.replace('LOC',input.invoicePrefix||'FAC');
  const rental={...input,...price,duration:count,assetName:a.name,customerName:`${customer.firstName} ${customer.lastName}`,phone:customer.whatsapp||customer.phone,status:'Active',invoice,createdAt:new Date().toISOString(),organizationId:org};
  t.set(rc,{value:(rs.data()?.value||0)+1,organizationId:org});t.set(path(org,'rentals',id),rental);t.set(path(org,'invoices',invoice),{organizationId:org,rentalId:id,createdAt:rental.createdAt});
+ if(proformaId)t.update(path(org,'proformas',proformaId),{status:'Convertie',rentalId:id,invoiceId:invoice,convertedAt:rental.createdAt,updatedAt:rental.createdAt});
  t.update(ar,{available:a.available-input.quantity,status:a.available-input.quantity===0?'Loué':'Disponible'});
  if(input.paid>0){const n=(ps.data()?.value||0)+1;t.set(pc,{value:n,organizationId:org});t.set(path(org,'payments',generated(`PAY-${year()}`,n)),{organizationId:org,rentalId:id,amount:input.paid,currency:input.currency,method:input.method,date:rental.createdAt});}
  return id;});

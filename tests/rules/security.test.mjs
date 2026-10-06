@@ -1,7 +1,7 @@
 import {test,before,after,beforeEach} from 'node:test';
 import {readFileSync} from 'node:fs';
 import {initializeTestEnvironment,assertSucceeds,assertFails} from '@firebase/rules-unit-testing';
-import {doc,setDoc,getDoc,getDocs,collection,updateDoc} from 'firebase/firestore';
+import {doc,setDoc,getDoc,getDocs,collection,updateDoc,deleteDoc,writeBatch} from 'firebase/firestore';
 import {ref,uploadBytes,getBytes} from 'firebase/storage';
 let env;
 before(async()=>{env=await initializeTestEnvironment({projectId:'demo-lokasyon',firestore:{host:'127.0.0.1',port:8080,rules:readFileSync('firestore.rules','utf8')},storage:{host:'127.0.0.1',port:9199,rules:readFileSync('storage.rules','utf8')}});});
@@ -25,3 +25,14 @@ test('la fermeture des inscriptions interdit la création d’une entreprise par
 test('un super-admin peut lire toutes les entreprises et les audits, mais les écritures globales passent par le serveur',async()=>{const db=env.authenticatedContext('super').firestore();await assertSucceeds(getDocs(collection(db,'organizations')));await assertSucceeds(getDoc(doc(db,'adminAudit','event')));await assertFails(setDoc(doc(db,'superAdmins','another'),{active:true}));await assertFails(updateDoc(doc(db,'organizations','owner'),{status:'suspended'}));});
 test('les membres ne peuvent pas obtenir un rôle global et le propriétaire ne peut pas être rétrogradé',async()=>{const db=env.authenticatedContext('owner').firestore();await assertSucceeds(setDoc(doc(db,'organizations','owner','users','new-member'),{organizationId:'owner',role:'employee',email:'new@example.com'}));await assertFails(setDoc(doc(db,'organizations','owner','users','attacker'),{organizationId:'owner',role:'superadmin',email:'bad@example.com'}));await assertFails(updateDoc(doc(db,'organizations','owner','users','owner'),{role:'employee'}));});
 test('les règles Storage appliquent également les suspensions et le type des fichiers',async()=>{const storage=env.authenticatedContext('owner').storage();const photo=ref(storage,'organizations/owner/test.png');await assertSucceeds(uploadBytes(photo,new Uint8Array([1,2,3]),{contentType:'image/png'}));await assertFails(uploadBytes(ref(storage,'organizations/owner/script.txt'),new Uint8Array([1]),{contentType:'text/plain'}));await env.withSecurityRulesDisabled(c=>updateDoc(doc(c.firestore(),'organizations','owner'),{status:'suspended'}));await assertFails(getBytes(photo));await assertFails(uploadBytes(photo,new Uint8Array([1]),{contentType:'image/png'}));await assertSucceeds(getBytes(ref(env.authenticatedContext('super').storage(),'organizations/owner/test.png')));});
+
+test('les pro forma restent isolées, sans paiement et protégées après conversion ou annulation',async()=>{
+ const db=env.authenticatedContext('employee').firestore(),target=doc(db,'organizations','owner','proformas','PF-1');
+ const quote={organizationId:'owner',quantity:2,currency:'HTG',paid:0,status:'Brouillon',createdAt:'2026-10-06'};
+ await assertFails(setDoc(target,{...quote,paid:100}));await assertFails(setDoc(target,{...quote,status:'Convertie'}));
+ await assertSucceeds(setDoc(target,quote));await assertFails(getDoc(doc(env.authenticatedContext('other').firestore(),'organizations','owner','proformas','PF-1')));
+ await assertFails(updateDoc(target,{status:'Convertie',rentalId:'LOC-1',invoiceId:'FAC-1',convertedAt:'now'}));
+ const batch=writeBatch(db);batch.set(doc(db,'organizations','owner','rentals','LOC-1'),{organizationId:'owner',proformaId:'PF-1'});batch.set(doc(db,'organizations','owner','invoices','FAC-1'),{organizationId:'owner',rentalId:'LOC-1'});batch.update(target,{status:'Convertie',rentalId:'LOC-1',invoiceId:'FAC-1',convertedAt:'now'});await assertSucceeds(batch.commit());
+ await assertFails(updateDoc(target,{quantity:3}));await assertFails(deleteDoc(doc(env.authenticatedContext('owner').firestore(),'organizations','owner','proformas','PF-1')));
+ const cancelled=doc(db,'organizations','owner','proformas','PF-2');await assertSucceeds(setDoc(cancelled,quote));await assertSucceeds(updateDoc(cancelled,{status:'Annulée'}));await assertFails(updateDoc(cancelled,{status:'Brouillon'}));
+});

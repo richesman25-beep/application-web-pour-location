@@ -37,8 +37,8 @@ export function Provider({children}:{children:ReactNode}){
    if(!alive)return;setRole(member.data()?.role||'admin');
    stops.push(onSnapshot(orgRef,s=>{suspended=s.data()?.status==='suspended';updateAccess();}));
    stops.push(onSnapshot(memberRef,s=>{memberDisabled=!s.exists()||s.data()?.disabled===true;if(alive)setRole(s.data()?.role||'');updateAccess();}));
-   const loaded=new Set<string>();for(const name of ['customers','categories','assets','rentals','payments','invoices','settings']){
-    stops.push(onSnapshot(collection(db,'organizations',org,name),s=>{if(!alive)return;setData(old=>({...old,[name]:s.docs.map(d=>({...d.data(),id:d.id} as Row))}));if(name==='settings')setSettings({...defaults,...s.docs.find(d=>d.id==='company')?.data()});loaded.add(name);if(loaded.size===7){clearTimeout(timeout);setError('');setLoading(false);}},e=>{if(alive){clearTimeout(timeout);setError(e.message);setLoading(false);}}));
+   const loaded=new Set<string>();for(const name of ['customers','categories','assets','rentals','payments','invoices','proformas','settings']){
+    stops.push(onSnapshot(collection(db,'organizations',org,name),s=>{if(!alive)return;setData(old=>({...old,[name]:s.docs.map(d=>({...d.data(),id:d.id} as Row))}));if(name==='settings')setSettings({...defaults,...s.docs.find(d=>d.id==='company')?.data()});loaded.add(name);if(loaded.size===8){clearTimeout(timeout);setError('');setLoading(false);}},e=>{if(alive){clearTimeout(timeout);setError(e.message);setLoading(false);}}));
    }
   }catch(e){if(alive){clearTimeout(timeout);setError((e as Error).message);setLoading(false);}}})();
   return()=>{alive=false;clearTimeout(timeout);stops.forEach(s=>s());};

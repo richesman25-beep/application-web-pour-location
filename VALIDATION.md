@@ -45,3 +45,13 @@ npm run build
 ```
 
 Les tests de règles effacent les données de l’émulateur ; ne les lancez pas sur des données locales à conserver.
+
+## Pro forma — 6 octobre 2026
+
+- Build TypeScript/Vite réussi.
+- 20 tests unitaires réussis, dont 6 sur les montants, la validité et les conversions pro forma.
+- 11 tests des règles Firebase réussis, dont isolation des pro forma, absence de paiement, conversion avec références, interdiction de modifier/supprimer un document converti et verrouillage après annulation.
+- Parcours navigateur pro forma réussi : création, édition, PDF (contenu vérifié avec pdftotext), visibilité à l’impression, 4 pages sur 5 largeurs, stock et paiements inchangés avant conversion, facture définitive après conversion, refus du stock insuffisant et annulation.
+- Parcours navigateur de location existant réussi : client, stock, paiement, retour, PDF et responsive.
+- Un passage navigateur pendant des modifications avec rechargement Vite a interrompu le téléchargement PDF. Le parcours relancé après stabilisation des fichiers a réussi.
+- Tests réalisés exclusivement sur les émulateurs demo-lokasyon. Les règles Firebase de production et Netlify doivent être redéployés ; ce contrôle local ne constitue pas une validation du site public.
