@@ -1,19 +1,32 @@
 rules_version = '2';
 service cloud.firestore {
  match /databases/{database}/documents {
+  function signedIn() { return request.auth != null; }
+  function accountEnabled() { return signedIn() && (!exists(/databases/$(database)/documents/accountStatus/$(request.auth.uid)) || get(/databases/$(database)/documents/accountStatus/$(request.auth.uid)).data.get('disabled', false) != true); }
+  function superAdmin() { return accountEnabled() && exists(/databases/$(database)/documents/superAdmins/$(request.auth.uid)) && get(/databases/$(database)/documents/superAdmins/$(request.auth.uid)).data.active == true; }
+  function siteAvailable() { return !exists(/databases/$(database)/documents/platform/settings) || get(/databases/$(database)/documents/platform/settings).data.get('maintenance', false) != true; }
+  function registrationOpen() { return siteAvailable() && (!exists(/databases/$(database)/documents/platform/settings) || get(/databases/$(database)/documents/platform/settings).data.get('registrationOpen', true) != false); }
+  match /superAdmins/{uid} { allow read: if superAdmin() || (signedIn() && request.auth.uid == uid); allow write: if false; }
+  match /accountStatus/{uid} { allow read: if superAdmin() || (signedIn() && request.auth.uid == uid); allow write: if false; }
+  match /platform/{id} { allow read: if id == 'settings'; allow write: if false; }
+  match /adminAudit/{id} { allow read: if superAdmin(); allow write: if false; }
   match /organizations/{org} {
-   function member() { return request.auth != null && exists(/databases/$(database)/documents/organizations/$(org)/users/$(request.auth.uid)); }
+   function orgActive() { return exists(/databases/$(database)/documents/organizations/$(org)) && get(/databases/$(database)/documents/organizations/$(org)).data.get('status','active') != 'suspended'; }
+   function member() { return accountEnabled() && siteAvailable() && orgActive() && exists(/databases/$(database)/documents/organizations/$(org)/users/$(request.auth.uid)) && get(/databases/$(database)/documents/organizations/$(org)/users/$(request.auth.uid)).data.get('disabled',false) != true; }
    function admin() { return member() && get(/databases/$(database)/documents/organizations/$(org)/users/$(request.auth.uid)).data.role == 'admin'; }
-   allow create: if request.auth != null && org == request.auth.uid && request.resource.data.organizationId == org;
-   allow read: if member() || request.auth.uid == org;
-   allow update, delete: if admin();
+   allow create: if accountEnabled() && registrationOpen() && org == request.auth.uid && request.resource.data.organizationId == org && request.resource.data.keys().hasOnly(['organizationId','name','status','createdAt']) && request.resource.data.get('status','active') == 'active';
+   allow read: if superAdmin() || member() || (accountEnabled() && request.auth.uid == org);
+   allow update: if admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name','updatedAt']);
+   allow delete: if false;
    match /users/{uid} {
-    allow read: if member() || request.auth.uid == org;
-    allow create: if request.auth.uid == org && uid == org && request.resource.data.role == 'admin' && request.resource.data.organizationId == org;
-    allow update, delete: if admin() && uid != org && request.resource.data.organizationId == org;
+    function validMember() { return request.resource.data.organizationId == org && request.resource.data.role in ['admin','employee'] && request.resource.data.keys().hasOnly(['organizationId','email','role','disabled']); }
+    allow read: if superAdmin() || member() || (accountEnabled() && request.auth.uid == org);
+    allow create: if validMember() && ((accountEnabled() && siteAvailable() && orgActive() && request.auth.uid == org && uid == org && request.resource.data.role == 'admin' && request.resource.data.get('disabled',false) != true) || (admin() && uid != org));
+    allow update: if admin() && uid != org && validMember();
+    allow delete: if admin() && uid != org;
    }
    match /{collection}/{id} {
-    allow read: if member() && collection != 'users';
+    allow read: if collection != 'users' && (superAdmin() || member());
     allow create, update: if collection != 'users' && member() && request.resource.data.organizationId == org && (collection in ['customers','assets','rentals','payments','invoices','counters'] || (admin() && collection in ['categories','settings']));
     allow delete: if collection != 'users' && admin();
    }

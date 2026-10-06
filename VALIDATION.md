@@ -1,32 +1,47 @@
-# Validation de cette livraison
+# Validation de la livraison
 
-## Vérifié dans l'environnement cloud
+## Vérifications exécutées dans le cloud
 
-- Dépendances installées avec npm ; lockfile présent.
-- Compilation TypeScript et bundle Vite : réussis.
-- Sept tests Vitest de calcul : réussis (caution distincte des revenus, paiements partiels, durées, dates invalides, valeurs invalides, arrondis, pénalités, conversion du fuseau haïtien).
-- Serveur Vite : réponse HTTP 200.
-- Écran de connexion du bundle compilé vérifié dans Chromium avec le serveur de prévisualisation.
-- Le SDK Firebase constitue un bundle de 571 Ko avant gzip (171 Ko gzip) ; Vite signale sa taille, sans erreur de compilation. Le PDF est chargé à la demande.
-- Émulateur Firebase Authentication : démarré.
-- Test Playwright : inscription puis connexion via le véritable émulateur Authentication ; écran de connexion aux largeurs 360, 390, 768, 1024 et 1440 px ; absence de débordement horizontal et d'erreur JavaScript : réussi.
+- Compilation TypeScript et bundle Vite réussis.
+- Compilation du serveur Firebase Functions réussie.
+- 14 tests Vitest réussis : calculs de location, caution séparée des revenus, paiements, pénalités, fuseau horaire haïtien et configuration Firebase réelle/local.
+- 5 tests serveur réussis : rôle actif, protection contre l’auto-suspension, identifiants, rôles et paramètres.
+- 10 tests de sécurité Firestore/Storage réussis sur les véritables émulateurs : absence d’auto-promotion, isolation des entreprises, protection des paramètres et audits, suspension des comptes/membres, suspension d’entreprise, maintenance et fermeture de création d’entreprises.
+- 1 test d’intégration des fonctions réussit le scénario multi-actions : refus d’un utilisateur ordinaire ou anonyme, liste des comptes, suspension/réactivation des comptes et entreprises, rôles des membres, promotions et révocations, paramètres globaux, lien de réinitialisation et audit.
+- 3 tests Playwright réussis : authentification ; console super-admin ; parcours client → location → paiement → facture PDF → retour → stock. Les pages de gestion et la console sont vérifiées aux largeurs 360, 390, 768, 1024 et 1440 px, sans débordement horizontal ni erreur JavaScript.
 
-## Non encore validé
+Les téléchargements officiels des émulateurs Firestore et Storage fonctionnent désormais dans cet environnement. Firebase CLI conserve sa vérification des fichiers téléchargés. Authentication, Firestore, Storage et Functions ont démarré et ont été exercés ensemble.
 
-Le téléchargement officiel des émulateurs Firestore et Storage est bloqué par la politique réseau de l'environnement cloud (`storage.googleapis.com`, HTTP 403). Aucun artifact non vérifié n'a été utilisé. Les domaines nécessaires ont été ajoutés au brouillon de configuration, mais leur activation nécessite l'enregistrement dans les paramètres de l'environnement.
+## Publication et limites
 
-Le test `tests/e2e/workflow.spec.ts` est fourni mais n'a pas encore été exécuté jusqu'à son terme. Il vérifie le parcours client → location → paiement → facture PDF → retour → stock et le responsive des pages de gestion aux cinq tailles. Les opérations de gestion, les règles Firestore/Storage et le PDF ne sont donc pas présentés comme validés en exécution dans cette livraison.
+Les tests modifient exclusivement `demo-lokasyon`, jamais `mon-projet-ia-891e5`. Aucun compte réel n’a été créé, promu, suspendu ou supprimé. Le rôle super-admin est implémenté ; le premier compte sera désigné plus tard depuis un environnement de confiance.
 
-Le projet Firebase réel `mon-projet-ia-891e5` n'a pas été modifié. Son activation Email/Password, sa base Firestore, son bucket Storage, ses domaines autorisés et ses règles restent à vérifier dans la console avant utilisation réelle.
+Les fonctions et règles de production ne sont pas déployées par cette livraison. Leur activation et les étapes du premier super-admin sont décrites dans `SUPERADMIN.md`. Firebase Cloud Functions requiert normalement Blaze ; un déploiement de l’interface Netlify seul ne suffit pas aux actions serveur. Email/Password et les domaines autorisés demeurent des prérequis Firebase.
 
-## Reprendre les vérifications
+Les émulateurs ont utilisé le Node.js 24 présent dans ce cloud ; les fonctions publiées ciblent Node.js 22. Le bundle Firebase produit un avertissement de taille Vite, sans erreur de compilation ; le PDF est chargé à la demande.
 
-Après autorisation du domaine de téléchargement, arrêtez le processus d'authentification seul si celui-ci fonctionne encore, puis lancez `npm run emulators` pour démarrer les trois services. Dans un autre terminal, lancez `npm run dev`, puis `npm run test:e2e`. Tous les tests E2E doivent être exécutés en mode émulateurs ; retirez temporairement `.env.local` s'il configure le projet réel.
+La fermeture des nouvelles entreprises est imposée par les règles Firestore mais ne ferme pas l’API publique de création de comptes Authentication. Les exports CSV portent sur les listes chargées et ne sont pas une sauvegarde complète. Les validations financières actuelles restent dans les transactions du client authentifié ; voir README.md pour le durcissement nécessaire avant une exploitation sensible.
 
-La publication de l'environnement cloud et celle du site n'ont pas été effectuées.
+## Reproduire les tests
 
-## Correction de la connexion Netlify
+Depuis la racine du projet :
 
-Le build publié utilise désormais le vrai projet Firebase par défaut. Des tests de configuration vérifient le mode production, le mode local, les surcharges et les messages d’erreur Authentication. Aucun compte de production n’est créé par ces tests. L’activation Email/Password, les domaines autorisés, Firestore et Storage restent des prérequis dans la console Firebase.
+```bash
+npm ci
+npm ci --prefix functions
+npm run build:server
+npm run emulators
+```
 
-Validation de cette correction : compilation réussie ; 14 tests unitaires réussis ; bundle de production vérifié dans Chromium (SDK Authentication dirigé vers Google, aucun accès aux ports des émulateurs, champ organisation masqué à l’inscription, message Email/Password correct). La requête Authentication du test navigateur a été interceptée : ce contrôle valide le raccordement et le traitement d’erreur, pas l’activation effective du projet réel.
+Dans un autre terminal, lancez `npm run dev`. Puis exécutez les vérifications sans paralléliser les suites qui partagent la base locale :
+
+```bash
+npm run test
+npm run test:server
+npm run test:rules
+node --test tests/rules/functions.test.mjs
+npm run test:e2e
+npm run build
+```
+
+Les tests de règles effacent les données de l’émulateur ; ne les lancez pas sur des données locales à conserver.

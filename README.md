@@ -8,6 +8,8 @@ Prérequis : Node.js 22 ou 24, npm et Java 21 pour les émulateurs Firebase. Sur
 
 ```bash
 npm ci
+npm ci --prefix functions
+npm run build:server
 ```
 
 Dans un premier terminal, depuis le dossier du projet :
@@ -54,6 +56,10 @@ npx firebase deploy --only firestore:rules,storage --project mon-projet-ia-891e5
 Créez ensuite votre compte administrateur via l'application. Un compte administrateur possède son organisation. Dans Paramètres, vous pouvez ajouter l'UID d'un collaborateur créé préalablement dans Authentication ; le collaborateur saisit l'identifiant de l'organisation à la connexion. Le rôle `employee` accède aux clients, biens, locations, paiements, factures et retours ; catégories et paramètres sont réservés aux administrateurs par les routes et les règles Firestore.
 
 Aucun déploiement ni écriture de test n'a été effectué sur votre projet Firebase réel pendant la création du projet.
+
+## Super-administration
+
+Un rôle global et une console `/super-admin` permettent de gérer les entreprises, les comptes, les accès, la maintenance et les actions d’administration. Consultez [SUPERADMIN.md](SUPERADMIN.md) pour le déploiement des fonctions et règles et l’attribution sécurisée du premier rôle à votre futur compte. Aucun utilisateur ne reçoit ce rôle depuis le formulaire d’inscription.
 
 ## Modules
 
@@ -104,6 +110,6 @@ Publication du site et publication de l'environnement cloud sont deux actions di
 
 `src/components` : formulaires et layout ; `src/pages` : modules ; `src/contexts` : état authentifié et abonnements Firestore ; `src/services` : calculs et transactions ; `src/firebase` : SDK et émulateurs ; `src/types` : modèles partagés.
 
-Chaque document inclut `organizationId`. Les données appartiennent à `organizations/{organizationId}/{collection}`. Les règles isolent les organisations et protègent les fonctions administratives. Avant un usage de production sensible, ajoutez des validations de schéma exhaustives côté règles ou un backend de confiance pour garantir les invariants financiers face à des appels SDK modifiés ; les contrôles de stock et de montant sont actuellement exécutés dans les transactions du client authentifié.
+Chaque document inclut `organizationId`. Le registre `superAdmins/{uid}` est en lecture contrôlée et modifiable uniquement par un serveur de confiance ou la console Firebase. `accountStatus/{uid}`, `platform/settings` et `adminAudit` stockent les suspensions, paramètres et audits. Les données métier appartiennent à `organizations/{organizationId}/{collection}`. Les règles isolent les organisations et protègent les fonctions administratives. Avant un usage de production sensible, ajoutez des validations de schéma exhaustives côté règles ou un backend de confiance pour garantir les invariants financiers face à des appels SDK modifiés ; les contrôles de stock et de montant sont actuellement exécutés dans les transactions du client authentifié.
 
 La liste des clients et biens est paginée dans l'interface ; les abonnements chargent actuellement les collections de l'organisation entière. Pour de gros volumes, remplacez-les par des requêtes paginées/indexées côté Firestore. Les textes sont en français ; une couche de traduction pourra être ajoutée ultérieurement. La PWA n'est pas activée.

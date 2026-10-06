@@ -8,6 +8,7 @@ const path=(org:string,name:string,id:string)=>doc(db,'organizations',org,name,i
 const generated=(prefix:string,n:number)=>`${prefix}-${String(n).padStart(5,'0')}`;
 export async function saveRow(org:string,name:string,input:any,id?:string){
  if(id){
+ if(name==='settings'&&id==='company'&&typeof input.name==='string'){const batch=writeBatch(db);batch.set(path(org,name,id),{...input,organizationId:org},{merge:true});batch.update(doc(db,'organizations',org),{name:input.name});await batch.commit();return id;}
  if(name==='assets')return runTransaction(db,async t=>{const target=path(org,name,id),current=(await t.get(target)).data();if(!current)throw new Error('Bien introuvable.');const occupied=current.quantity-current.available;if(!Number.isInteger(input.quantity)||input.quantity<Math.max(1,occupied))throw new Error('La quantité totale est inférieure au stock occupé.');t.update(target,{...input,available:input.quantity-occupied,quarantined:current.quarantined||0,organizationId:org});return id;});
  await setDoc(path(org,name,id),{...input,organizationId:org},{merge:true});return id;
  }
