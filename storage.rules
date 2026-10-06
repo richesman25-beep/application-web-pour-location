@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+ match /b/{bucket}/o {
+  match /organizations/{org}/{allPaths=**} {
+   function member() { return request.auth != null && firestore.exists(/databases/(default)/documents/organizations/$(org)/users/$(request.auth.uid)); }
+   allow read: if member();
+   allow write: if member() && request.resource.size < 5 * 1024 * 1024 && request.resource.contentType.matches('image/.*');
+  }
+ }
+}

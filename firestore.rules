@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  match /organizations/{org} {
+   function member() { return request.auth != null && exists(/databases/$(database)/documents/organizations/$(org)/users/$(request.auth.uid)); }
+   function admin() { return member() && get(/databases/$(database)/documents/organizations/$(org)/users/$(request.auth.uid)).data.role == 'admin'; }
+   allow create: if request.auth != null && org == request.auth.uid && request.resource.data.organizationId == org;
+   allow read: if member() || request.auth.uid == org;
+   allow update, delete: if admin();
+   match /users/{uid} {
+    allow read: if member() || request.auth.uid == org;
+    allow create: if request.auth.uid == org && uid == org && request.resource.data.role == 'admin' && request.resource.data.organizationId == org;
+    allow update, delete: if admin() && uid != org && request.resource.data.organizationId == org;
+   }
+   match /{collection}/{id} {
+    allow read: if member() && collection != 'users';
+    allow create, update: if collection != 'users' && member() && request.resource.data.organizationId == org && (collection in ['customers','assets','rentals','payments','invoices','counters'] || (admin() && collection in ['categories','settings']));
+    allow delete: if collection != 'users' && admin();
+   }
+  }
+ }
+}

@@ -1,0 +1,14 @@
+LOKASYON — APPLICATION WEB DE GESTION DE LOCATION
+
+1. Installez Node.js 22/24 et Java 21.
+2. Ouvrez un terminal dans ce dossier : npm ci
+3. Premier terminal : npm run emulators
+4. Deuxième terminal : npm run dev
+5. Ouvrez l'adresse affichée par Vite dans votre navigateur.
+6. Créez un compte de test, puis Paramètres > Charger les données de démonstration.
+
+Ne double-cliquez pas sur index.html : cette application nécessite le serveur Vite et Firebase.
+Sous Windows, utilisez Git Bash ou WSL pour les commandes d'émulation.
+Pour votre projet Firebase réel, consultez README.md et .env.firebase.example.
+Consultez VALIDATION.md pour les tests déjà réalisés et le blocage réseau cloud restant.
+Aucun déploiement de production n'a été effectué.
