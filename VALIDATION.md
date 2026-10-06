@@ -55,3 +55,9 @@ Les tests de règles effacent les données de l’émulateur ; ne les lancez pas
 - Parcours navigateur de location existant réussi : client, stock, paiement, retour, PDF et responsive.
 - Un passage navigateur pendant des modifications avec rechargement Vite a interrompu le téléchargement PDF. Le parcours relancé après stabilisation des fichiers a réussi.
 - Tests réalisés exclusivement sur les émulateurs demo-lokasyon. Les règles Firebase de production et Netlify doivent être redéployés ; ce contrôle local ne constitue pas une validation du site public.
+
+## Identité LOKASYON LAKAY — 6 octobre 2026
+
+Logo reproduit depuis la référence fournie en PNG transparent (1448 × 1086), conservé dans `public/images/logo-lokasyon-lakay.png`. Intégration dans la connexion, le menu latéral, l’en-tête mobile, l’espace super-admin et les écrans de chargement, y compris le contenu HTML initial. Titre et noms par défaut mis à jour ; les noms d’entreprise déjà personnalisés restent enregistrés dans Firebase.
+
+Build réussi. Tests navigateur connexion et parcours de location existant réussis, avec contrôle du responsive sur cinq largeurs. Vérification complémentaire sans JavaScript : logo initial chargé et titre LOKASYON LAKAY correct. Aucun déploiement Netlify effectué depuis cet environnement.

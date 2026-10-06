@@ -31,7 +31,7 @@ export function Provider({children}:{children:ReactNode}){
    if(suspended||memberDisabled){clearTimeout(timeout);setLoading(false);return;}
    if(!member.exists()&&org!==user.uid)throw new Error('Votre compte n’est pas membre de cette organisation.');
    if(!member.exists()){
-    if(!organization.exists())await setDoc(orgRef,{organizationId:org,name:'Lokasyon',status:'active',createdAt:new Date().toISOString()});
+    if(!organization.exists())await setDoc(orgRef,{organizationId:org,name:'LOKASYON LAKAY',status:'active',createdAt:new Date().toISOString()});
     await setDoc(memberRef,{organizationId:org,role:'admin',email:user.email});
    }
    if(!alive)return;setRole(member.data()?.role||'admin');

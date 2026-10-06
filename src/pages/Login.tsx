@@ -1,3 +1,4 @@
+import {Brand} from '../components/Brand';
 import {useApp} from '../contexts/AppContext';
 import {useState} from 'react';
 import {signInWithEmailAndPassword,createUserWithEmailAndPassword} from 'firebase/auth';
@@ -11,8 +12,8 @@ export function Login(){
  const [register,setRegister]=useState(false);
  const {site}=useApp();
  return <main className="login auth-page">
-  <section className="login-story auth-showcase" aria-label="Bienvenue sur Lokasyon">
-   <div className="auth-brand-row"><div className="brand"><span className="auth-brand-symbol">◈</span> Lokasyon<span className="auth-brand-dot">.</span></div><span className="auth-location"><MapPin size={13}/> Pensé pour Haïti</span></div>
+  <section className="login-story auth-showcase" aria-label="Bienvenue sur LOKASYON LAKAY">
+   <div className="auth-brand-row"><div className="brand"><Brand/></div><span className="auth-location"><MapPin size={13}/> Pensé pour Haïti</span></div>
    <div className="auth-story-copy"><p className="auth-eyebrow"><span/> MOINS DE GESTION, PLUS DE POSSIBILITÉS</p><h1>Vos locations.<br/><span>L’esprit tranquille.</span></h1><p>Un client, un bien, une nouvelle possibilité.<br/>Gérez chaque location et faites grandir votre activité.</p></div>
    <div className="auth-photo-frame">
     <img src="/images/location-accueil.webp" alt="Une entrepreneuse utilise un ordinateur pour gérer une location et remet les clés à son client." width="1440" height="1080" fetchPriority="high"/>
