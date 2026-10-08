@@ -6,13 +6,13 @@ Après publication de la dernière version Netlify, ouvrez **https://creostore.i
 - **Ordinateur / Chrome ou Edge** : utilisez le même bouton ou l’icône d’installation dans la barre d’adresse. L’application s’ouvre ensuite dans sa propre fenêtre.
 - **iPhone / iPad** : ouvrez le site dans **Safari**, puis **Partager → Sur l’écran d’accueil → Ajouter**. Activez **Ouvrir comme app** si cette option est proposée.
 
-Le logo apparaît comme icône de l’application. Une connexion Internet reste nécessaire pour les clients, le stock, les locations, les paiements et les factures. Sans réseau, une page indique comment se reconnecter, avec un bouton **Réessayer**. Il ne s’agit pas d’un mode de gestion hors ligne.
+Le logo apparaît comme icône de l’application. Après une première connexion sur cet appareil, les données déjà chargées sont consultables sans réseau. Les saisies restent dans une file locale et sont envoyées à Firebase à la reconnexion, lorsque l’application est ouverte. Voir [HORS-CONNEXION.md](HORS-CONNEXION.md).
 
 ## Fonctionnement technique
 
 Le manifeste `public/manifest.webmanifest` définit le nom, le démarrage sur `/dashboard`, la fenêtre autonome et l’icône. L’icône SVG contient le PNG reproduit depuis le logo ; le PNG est également utilisé pour iOS. La session Firebase suit le stockage du navigateur utilisé pour l’installation : une nouvelle connexion peut être nécessaire, notamment sur iOS.
 
-Le service worker `public/sw.js` est enregistré exclusivement dans la version de production. Il conserve uniquement la page hors connexion et les icônes publiques. Il ne met pas en cache les pages connectées, les réponses Firebase, les informations des clients ni les données financières. Les pages en ligne sont chargées depuis le réseau. Les en-têtes Netlify évitent le cache prolongé du service worker et du manifeste.
+Le service worker `public/sw.js` conserve l’interface compilée, ses modules, polices et images publiques. Il ne conserve pas les réponses Firebase dans le cache HTTP. Les données déjà chargées sont conservées séparément par Firestore dans IndexedDB ; les saisies en attente ont leur propre file locale. Les en-têtes Netlify évitent le cache prolongé du service worker et du manifeste. Une nouvelle version s’active une fois les anciennes fenêtres fermées, afin de conserver des modules cohérents pendant une session.
 
 ## Vérification locale
 

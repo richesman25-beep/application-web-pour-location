@@ -34,10 +34,15 @@ service cloud.firestore {
      (request.resource.data.status == 'Convertie' && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','rentalId','invoiceId','convertedAt','updatedAt']) && getAfter(/databases/$(database)/documents/organizations/$(org)/rentals/$(request.resource.data.rentalId)).data.proformaId == id && getAfter(/databases/$(database)/documents/organizations/$(org)/invoices/$(request.resource.data.invoiceId)).data.rentalId == request.resource.data.rentalId)
     );
    }
+   match /offlineOperations/{id} {
+    allow read: if member() && (!exists(/databases/$(database)/documents/organizations/$(org)/offlineOperations/$(id)) || resource.data.createdBy == request.auth.uid);
+    allow create: if member() && request.resource.data.organizationId == org && request.resource.data.createdBy == request.auth.uid && request.resource.data.keys().hasOnly(['organizationId','createdBy','createdAt','kind','result']);
+    allow update, delete: if false;
+   }
    match /{collection}/{id} {
-    allow read: if collection != 'users' && (superAdmin() || (accountingCollection(collection) ? admin() : member()));
-    allow create, update: if collection != 'users' && (collection != 'counters' || id != 'accountingJournal') && member() && request.resource.data.organizationId == org && (collection in ['customers','assets','rentals','payments','invoices','counters'] || (admin() && collection in ['categories','settings']));
-    allow delete: if collection != 'users' && collection != 'proformas' && !accountingCollection(collection) && (collection != 'counters' || id != 'accountingJournal') && admin();
+    allow read: if collection != 'users' && collection != 'offlineOperations' && (superAdmin() || (accountingCollection(collection) ? admin() : member()));
+    allow create, update: if collection != 'users' && collection != 'offlineOperations' && (collection != 'counters' || id != 'accountingJournal') && member() && request.resource.data.organizationId == org && (collection in ['customers','assets','rentals','payments','invoices','counters'] || (admin() && collection in ['categories','settings']));
+    allow delete: if collection != 'users' && collection != 'offlineOperations' && collection != 'proformas' && !accountingCollection(collection) && (collection != 'counters' || id != 'accountingJournal') && admin();
    }
   }
  }

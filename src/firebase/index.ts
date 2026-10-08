@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, connectFirestoreEmulator } from 'firebase/firestore';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import {getFunctions,connectFunctionsEmulator} from 'firebase/functions';
 import { firebaseSettings } from './config';
@@ -8,7 +8,7 @@ import { firebaseSettings } from './config';
 const settings = firebaseSettings((import.meta as any).env);
 export const emulator = settings.emulator;
 const app = initializeApp(settings.config);
-export const auth = getAuth(app), db = getFirestore(app), storage = getStorage(app);
+export const auth = getAuth(app), db = initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})}), storage = getStorage(app);
 export const functions=getFunctions(app,'us-central1');
 if (emulator) {
   const host = window.location.hostname;

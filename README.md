@@ -121,3 +121,7 @@ L’installation sur téléphone et ordinateur est décrite dans [INSTALLATION.m
 ## Comptabilité
 
 Les administrateurs disposent du menu **Comptabilité** : plan de comptes, écritures débit/crédit, import des factures et paiements sans doublons, grand livre, balance, bilan, résultat, exports CSV, impression et clôtures mensuelles. HTG et USD restent séparés. Consultez [COMPTABILITE.md](COMPTABILITE.md) pour la prise en main et le déploiement des fonctions Firebase et des règles nécessaires.
+
+## Mode hors connexion
+
+L’application installée conserve l’interface et les données déjà chargées sur l’appareil. Les saisies de clients, biens, locations, paiements, retours et pro forma sont enregistrées dans une file locale, puis validées et envoyées automatiquement à Firebase à la reconnexion, avec l’application ouverte. Les conflits restent visibles ; les transactions disposent d’un reçu unique pour éviter les doublons après une coupure. La comptabilité et l’administration serveur nécessitent une connexion. Guide et règles à déployer : [HORS-CONNEXION.md](HORS-CONNEXION.md).

@@ -11,7 +11,7 @@ display.addEventListener('change',()=>update({...state,installed:isInstalled()})
 export function useInstallation(){return useSyncExternalStore(listener=>{subscribers.add(listener);return()=>{subscribers.delete(listener);};},()=>state);}
 export function clearInstallPrompt(){update({...state,prompt:null});}
 export function registerServiceWorker(){
- if(!import.meta.env.PROD||!('serviceWorker' in navigator))return;
+ if((!import.meta.env.PROD&&import.meta.env.MODE!=='offline-test')||!('serviceWorker' in navigator))return;
  const register=()=>{void navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'}).catch(()=>{/* Installation remains available through the browser menu. */});};
  if(document.readyState==='complete')register();else window.addEventListener('load',register,{once:true});
 }

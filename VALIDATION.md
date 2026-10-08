@@ -92,3 +92,17 @@ Ajout d’un espace réservé aux administrateurs : 27 comptes de départ, journ
 Ces vérifications utilisent uniquement le projet fictif `demo-lokasyon`. Aucun déploiement Firebase ou Netlify de production n’a été effectué. Instructions de déploiement et limites fonctionnelles : COMPTABILITE.md.
 
 Régression navigateur : connexion, pro forma/PDF/impression, installation PWA, parcours de location/paiement/retour et responsive réussis. Le test super-admin a révélé une navigation avant la fin de la connexion ; ajout d’une attente de la redirection authentifiée dans le test, puis parcours super-admin complet réussi. Aucun changement métier n’a été nécessaire pour cette correction de test.
+
+## Mode hors connexion — 7 octobre 2026
+
+Interface compilée disponible dans le service worker, cache persistant Firestore, organisation conservée par compte et file IndexedDB des saisies. La file est séparée par utilisateur et organisation, exportable, et synchronisée lorsque l’application est ouverte et le réseau retrouvé. Chaque mutation dispose d’un reçu immuable écrit dans la même transaction pour éviter une seconde application après perte de confirmation. Les modifications de fiches vérifient leur version initiale ; les locations, paiements et retours recontrôlent les contraintes métier au moment de la synchronisation.
+
+- Compilation de production et compilation isolée `offline-test` réussies. Le build de production reste connecté à Firebase réel ; le build de test utilise uniquement `demo-lokasyon`.
+- 27 tests unitaires réussis, dont comparaison stable des versions de documents.
+- 13 tests des règles Firestore réussis, dont création personnelle des reçus, interdiction de modification/suppression, isolation et suspension.
+- Parcours compilé avec service worker réussi : première sauvegarde des paramètres, redémarrage hors connexion, consultation des clients, conservation de cinq saisies locales (client, paiement, location, retour, pro forma), synchronisation automatique et conservation d’un conflit de stock. Rejeu du même paiement après confirmation perdue sans double encaissement ; reprise du conflit après restauration du stock.
+- Les huit parcours navigateur ont réussi après ajustement de leurs attentes : comptabilité, connexion, hors connexion, pro forma/PDF/impression, deux contrôles PWA, super-admin et location/paiement/retour/PDF sur cinq largeurs.
+- Le premier contrôle hors connexion a montré que `navigator.onLine` peut rester vrai après un redémarrage sans réseau. Le service worker signale maintenant le démarrage hors connexion et une vérification réseau indépendante confirme la reconnexion.
+- Deux sélecteurs de tests ont été ajustés : état comptable ciblé dans son espace, label de sélection pro forma sans correspondance textuelle stricte. Le parcours de 80 chargements complets utilise le contenu DOM prêt et un délai adapté à l’initialisation du cache persistant.
+
+La validation reste locale. Publier les nouvelles règles Firestore avant d’activer cette version sur Netlify : toutes les mutations utilisent désormais les reçus. Le code est livré dans une branche dédiée pour respecter cet ordre. Guide : HORS-CONNEXION.md. Les photos, l’administration de plateforme, la validation des écritures et les clôtures comptables nécessitent une connexion ; l’envoi lorsque l’application est fermée n’est pas garanti.
