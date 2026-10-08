@@ -1,3 +1,4 @@
+import {exportFile} from './nativeService';
 import type {Account,JournalLine} from '../../functions/src/accountingPolicy';
 export type Journal={id:string;date:string;currency:string;reference:string;description:string;lines:JournalLine[];createdAt:string;source:string;reversedBy?:string;reverses?:string;rentalId?:string};
 export function journalSort(a:Journal,b:Journal){return a.date.localeCompare(b.date)||a.createdAt.localeCompare(b.createdAt)||a.id.localeCompare(b.id);}
@@ -17,4 +18,4 @@ export function generalLedger(entries:Journal[],accountCode:string,currency:stri
  for(const movement of movements){balance+=movement.line.debit-movement.line.credit;if(movement.entry.date<from)opening=balance;else rows.push({...movement,balance});}return {opening,rows,balance};
 }
 export function csvContent(rows:(string|number)[][]){const cell=(value:string|number)=>{let text=String(value);if(typeof value==='string'&&/^[\s]*[=+@-]/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"';};return '\uFEFF'+rows.map(row=>row.map(cell).join(';')).join('\r\n');}
-export function exportCsv(filename:string,rows:(string|number)[][]){const blob=new Blob([csvContent(rows)],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+export function exportCsv(filename:string,rows:(string|number)[][]){void exportFile(filename,new Blob([csvContent(rows)],{type:'text/csv;charset=utf-8;'})).catch(()=>window.alert('Impossible d’exporter ce fichier.'));}

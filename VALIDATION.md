@@ -106,3 +106,14 @@ Interface compilée disponible dans le service worker, cache persistant Firestor
 - Deux sélecteurs de tests ont été ajustés : état comptable ciblé dans son espace, label de sélection pro forma sans correspondance textuelle stricte. Le parcours de 80 chargements complets utilise le contenu DOM prêt et un délai adapté à l’initialisation du cache persistant.
 
 La validation reste locale. Publier les nouvelles règles Firestore avant d’activer cette version sur Netlify : toutes les mutations utilisent désormais les reçus. Le code est livré dans une branche dédiée pour respecter cet ordre. Guide : HORS-CONNEXION.md. Les photos, l’administration de plateforme, la validation des écritures et les clôtures comptables nécessitent une connexion ; l’envoi lorsque l’application est fermée n’est pas garanti.
+
+## APK Android — 8 octobre 2026
+
+APK de test généré avec Capacitor 7 : application embarquée, package `com.lokasyonlakay.app`, Android minimum API 23 et cible API 35, icône et écran de lancement avec le logo. Les exports PDF/CSV/JSON passent par le partage Android ; un plugin local ouvre le service d’impression du WebView. Le service worker et le bouton d’installation PWA sont désactivés dans le contexte natif ; le cache Firestore et la file locale restent disponibles. L’AdSense Web est exclu du build Android uniquement.
+
+- Compilation Web de production, build Web Android et assemblage Gradle `assembleDebug` réussis. Installation d’un JDK 21 complet après constat que le Java initial ne contenait pas de compilateur.
+- APK signé, validé par `apksigner` (signatures v1 et v2), package/SDK/nom contrôlés par `aapt`, archive ZIP complète, interface compilée et plugin d’impression présents. Aucun serveur distant configuré pour charger l’interface ; configuration Firebase réelle attendue présente.
+- 27 tests unitaires réussis. Parcours navigateur de pro forma/PDF/impression, comptabilité/CSV et deux parcours PWA réussis. L’attente de fin d’inscription a été rendue explicite dans les tests de comptabilité et pro forma pour éviter une navigation avant connexion.
+- Fichier livré dans `downloads/LOKASYON-LAKAY-test.apk`, avec empreinte SHA-256 à côté. La clé de signature de test et les chemins locaux du SDK sont exclus de Git.
+
+Version de test uniquement : pas de publication Google Play, pas d’installation sur un téléphone distant et pas de validation matérielle du partage, du choix des photos ou de l’impression. Aucun déploiement Firebase effectué ; fonctions et règles de cette branche nécessaires avant les opérations métier. Guide : ANDROID.md.

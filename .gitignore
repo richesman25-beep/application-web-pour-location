@@ -9,3 +9,9 @@ playwright-report/
 *.tsbuildinfo
 .env.firebase.local
 functions/lib/
+dist-android/
+android/local.properties
+android/.gradle/
+android/**/build/
+*.keystore
+*.jks

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">LOKASYON LAKAY</string>
+    <string name="title_activity_main">LOKASYON LAKAY</string>
+    <string name="package_name">com.lokasyonlakay.app</string>
+    <string name="custom_url_scheme">com.lokasyonlakay.app</string>
+</resources>

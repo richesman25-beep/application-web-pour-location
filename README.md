@@ -125,3 +125,7 @@ Les administrateurs disposent du menu **Comptabilité** : plan de comptes, écri
 ## Mode hors connexion
 
 L’application installée conserve l’interface et les données déjà chargées sur l’appareil. Les saisies de clients, biens, locations, paiements, retours et pro forma sont enregistrées dans une file locale, puis validées et envoyées automatiquement à Firebase à la reconnexion, avec l’application ouverte. Les conflits restent visibles ; les transactions disposent d’un reçu unique pour éviter les doublons après une coupure. La comptabilité et l’administration serveur nécessitent une connexion. Guide et règles à déployer : [HORS-CONNEXION.md](HORS-CONNEXION.md).
+
+## APK Android
+
+Une version Android de test est disponible dans la branche `feature/android-apk`, avec interface embarquée, logo, file hors connexion, partage des documents et impression Android. Installation et compilation : [ANDROID.md](ANDROID.md). Le déploiement des fonctions et règles Firebase de cette version reste nécessaire aux opérations métier.
