@@ -1,3 +1,4 @@
+import {NativeAccountLinks} from '../components/NativeAccountLinks';
 import {InstallApp} from '../components/InstallApp';
 import {DownloadApk} from '../components/DownloadApk';
 import {Brand} from '../components/Brand';
@@ -37,6 +38,7 @@ export function Login(){
    <p className="auth-footer">Simple à utiliser. Pensé pour votre quotidien.<span>HTG & USD · Ordinateur & mobile</span></p>
    <InstallApp/>
    <DownloadApk/>
+   <NativeAccountLinks/>
   </section>
  </main>;
 }

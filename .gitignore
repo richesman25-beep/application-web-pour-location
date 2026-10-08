@@ -15,3 +15,8 @@ android/.gradle/
 android/**/build/
 *.keystore
 *.jks
+
+android/keystore.properties
+android/release-signing/
+*.aab
+.env.android.local

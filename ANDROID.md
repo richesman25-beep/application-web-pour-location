@@ -1,10 +1,10 @@
 # APK Android — LOKASYON LAKAY
 
-Cette version de test utilise Capacitor 7 et embarque l’interface compilée de LOKASYON LAKAY. Elle utilise le projet Firebase réel `mon-projet-ia-891e5`. Elle ne charge pas simplement une URL Netlify : l’interface reste disponible sur l’appareil, avec la file hors connexion de cette branche.
+Cette version de test utilise Capacitor 8 et embarque l’interface compilée de LOKASYON LAKAY. Elle utilise le projet Firebase réel `mon-projet-ia-891e5`. Elle ne charge pas simplement une URL Netlify : l’interface reste disponible sur l’appareil, avec la file hors connexion de cette branche.
 
 ## Installation
 
-Téléchargez `downloads/LOKASYON-LAKAY-test.apk` sur votre téléphone Android, ouvrez le fichier et autorisez l’installation depuis ce navigateur si Android le demande. L’APK de test est signé et installable directement ; il n’est pas publié sur Google Play. Le projet définit Android 6 / API 23 comme version minimale. Une version récente d’Android System WebView est nécessaire.
+Téléchargez `downloads/LOKASYON-LAKAY-test.apk` sur votre téléphone Android, ouvrez le fichier et autorisez l’installation depuis ce navigateur si Android le demande. L’APK de test est signé et installable directement ; il n’est pas publié sur Google Play. Le projet définit Android 7 / API 24 comme version minimale. Une version récente d’Android System WebView est nécessaire.
 
 Connectez-vous avec le compte Firebase utilisé sur le site. La session et les saisies locales sont distinctes de celles du navigateur. Une première connexion avec Internet est nécessaire avant la consultation hors connexion. Les données déjà synchronisées restent dans Firebase ; les saisies en attente sont propres à cet appareil.
 
@@ -29,7 +29,7 @@ Les scripts AdSense de la page Web sont exclus du build Android ; la version Web
 
 ## Recompiler
 
-Prérequis : Node.js 22 ou 24, JDK 21 complet, Android Studio / Android SDK 35 avec Build Tools 34 et 35, licences SDK acceptées.
+Prérequis : Node.js 22 ou 24, JDK 21 complet, Android Studio / Android SDK 36 avec Build Tools 36.0.0, licences SDK acceptées.
 
 ```bash
 npm ci
@@ -44,8 +44,12 @@ Puis dans le dossier `android` :
 
 Sur Windows, utilisez `gradlew.bat assembleDebug`. Le résultat se trouve dans `android/app/build/outputs/apk/debug/app-debug.apk`. `npm run android:open` ouvre le projet dans Android Studio.
 
-La clé de test n’est pas dans Git. Pour une distribution durable et des mises à jour compatibles, préparez et conservez votre propre clé de signature avec Android Studio. Une nouvelle signature peut nécessiter de désinstaller l’ancienne version : synchronisez ou sauvegardez les saisies locales avant toute désinstallation. La publication Google Play et une signature de production ne font pas partie de cet APK de test.
+La clé de test n’est pas dans Git. Pour une distribution durable et des mises à jour compatibles, préparez et conservez votre propre clé de signature avec Android Studio. Une nouvelle signature peut nécessiter de désinstaller l’ancienne version : synchronisez ou sauvegardez les saisies locales avant toute désinstallation. La signature release et la génération du bundle Google Play sont maintenant configurées : suivez GOOGLE_PLAY.md pour créer votre clé privée dans Android Studio, configurer les pages de confidentialité/suppression et produire votre AAB de publication. Cet APK reste une version debug de test.
 
 ## Vérifications
 
 La compilation Android et les contrôles de signature/contenu de l’APK sont vérifiés dans l’environnement cloud. Les tests unitaires et les parcours navigateur de comptabilité, pro forma/PDF et installation PWA vérifient que les adaptations Android préservent la version Web. L’installation, les autorisations, le choix du fichier, le partage et l’impression sur un vrai téléphone restent à tester ; aucune installation distante sur votre téléphone n’a été effectuée.
+
+## Publication Google Play
+
+Voir [GOOGLE_PLAY.md](GOOGLE_PLAY.md) pour le SDK 36, la création de la clé d’envoi, les prérequis de confidentialité/suppression de compte, la recette téléphone et le bundle signé. [ANDROID_AUDIT.md](ANDROID_AUDIT.md) distingue les contrôles techniques réalisés et les points qui nécessitent encore votre clé, vos services publics et un appareil Android.

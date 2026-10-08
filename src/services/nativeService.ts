@@ -1,3 +1,4 @@
+import {App} from '@capacitor/app';
 import {Capacitor,registerPlugin} from '@capacitor/core';
 import {Filesystem,Directory} from '@capacitor/filesystem';
 import {Share} from '@capacitor/share';
@@ -7,4 +8,10 @@ export async function exportFile(filename:string,blob:Blob){
  const result=await Filesystem.writeFile({path:'exports/'+filename.replace(/[^a-zA-Z0-9._-]/g,'_'),data,directory:Directory.Cache,recursive:true});
  await Share.share({title:filename,url:result.uri,dialogTitle:'Enregistrer ou partager le document'});
 }
-export function initializeNative(){if(!Capacitor.isNativePlatform())return;const print=registerPlugin<{print:()=>Promise<void>}>('AppPrint');window.print=()=>{void print.print().catch(()=>window.alert('Impossible d’ouvrir l’impression Android.'));};}
+export function initializeNative(){if(!Capacitor.isNativePlatform())return;
+ document.documentElement.classList.add('android-native');
+ const viewport=window.visualViewport;
+ const keyboard=()=>document.documentElement.classList.toggle('keyboard-open',!!viewport&&window.innerHeight-viewport.height>150);
+ viewport?.addEventListener('resize',keyboard);keyboard();
+ void App.addListener('appStateChange',({isActive})=>{if(isActive)window.dispatchEvent(new Event('online'));});
+const print=registerPlugin<{print:()=>Promise<void>}>('AppPrint');window.print=()=>{void print.print().catch(()=>window.alert('Impossible d’ouvrir l’impression Android.'));};}

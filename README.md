@@ -129,3 +129,7 @@ L’application installée conserve l’interface et les données déjà chargé
 ## APK Android
 
 Une version Android de test est disponible dans la branche `feature/android-apk`, avec interface embarquée, logo, file hors connexion, partage des documents et impression Android. Installation et compilation : [ANDROID.md](ANDROID.md). Le déploiement des fonctions et règles Firebase de cette version reste nécessaire aux opérations métier.
+
+## Préparation Google Play
+
+Le projet Android utilise Capacitor 8 et compile/cible Android 16/API 36. Consultez [GOOGLE_PLAY.md](GOOGLE_PLAY.md) pour la clé d’envoi à créer dans Android Studio, les pages publiques nécessaires et `npm run android:bundle`. L’[audit Android](ANDROID_AUDIT.md) et les [résultats de validation](ANDROID_VALIDATION.md) détaillent ce qui a été contrôlé. Le fichier AAB livré est une variante de validation signée debug ; il ne remplace pas votre bundle release signé avec votre clé privée.

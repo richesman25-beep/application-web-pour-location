@@ -1,0 +1,8 @@
+/* Android only: desktop and mobile browser styling stays intact. */
+html.android-native button,html.android-native .button{min-height:44px}
+html.android-native .sidebar .sidebar-bottom{padding-bottom:8px}
+html.android-native.keyboard-open .mobile-nav{display:none}
+html.android-native input,html.android-native select,html.android-native textarea{scroll-margin-block:80px}
+
+.native-account-links{display:flex;flex-direction:column;gap:4px;margin-top:12px;font-size:11px;color:var(--blue-dark)}
+.native-account-links a{display:flex;align-items:center;min-height:44px;line-height:1.5}
