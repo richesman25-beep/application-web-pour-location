@@ -1,4 +1,7 @@
 /* Scoped layout improvements. Keep statistics and their shared styles untouched. */
+.dashboard-shell .sidebar-bottom .apk-download{margin-bottom:16px}
+.dashboard-shell .sidebar-bottom .apk-download .primary{width:100%;font-size:11px;padding:10px;line-height:1.5}
+.dashboard-shell .sidebar-bottom .apk-download>p{font-size:10px;margin:8px 0}
 .dashboard-shell .topbar{gap:20px}
 .dashboard-shell .global-search{min-width:0}
 .dashboard-shell .global-search svg{flex-shrink:0}
