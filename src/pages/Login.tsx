@@ -1,4 +1,5 @@
 import {InstallApp} from '../components/InstallApp';
+import {DownloadApk} from '../components/DownloadApk';
 import {Brand} from '../components/Brand';
 import {useApp} from '../contexts/AppContext';
 import {useState} from 'react';
@@ -35,6 +36,7 @@ export function Login(){
    </div>
    <p className="auth-footer">Simple à utiliser. Pensé pour votre quotidien.<span>HTG & USD · Ordinateur & mobile</span></p>
    <InstallApp/>
+   <DownloadApk/>
   </section>
  </main>;
 }
