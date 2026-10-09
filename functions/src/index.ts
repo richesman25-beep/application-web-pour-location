@@ -69,3 +69,6 @@ export const adminSetSuperAdmin=onCall(options,async request=>{
 });
 
 export {accountingInitialize,accountingSaveAccount,accountingPost,accountingReverse,accountingSetPeriod,accountingSync} from './accounting';
+
+export {businessOperation} from './business';
+export {uploadPrivatePhoto,readPrivatePhoto} from './photos';

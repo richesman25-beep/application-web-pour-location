@@ -1,12 +1,8 @@
 rules_version = '2';
 service firebase.storage {
  match /b/{bucket}/o {
-  function accountEnabled() { return request.auth != null && (!firestore.exists(/databases/(default)/documents/accountStatus/$(request.auth.uid)) || firestore.get(/databases/(default)/documents/accountStatus/$(request.auth.uid)).data.get('disabled', false) != true); }
-  function superAdmin() { return accountEnabled() && firestore.exists(/databases/(default)/documents/superAdmins/$(request.auth.uid)) && firestore.get(/databases/(default)/documents/superAdmins/$(request.auth.uid)).data.active == true; }
-  match /organizations/{org}/{allPaths=**} {
-   function member() { return accountEnabled() && (!firestore.exists(/databases/(default)/documents/platform/settings) || firestore.get(/databases/(default)/documents/platform/settings).data.get('maintenance',false) != true) && firestore.exists(/databases/(default)/documents/organizations/$(org)) && firestore.get(/databases/(default)/documents/organizations/$(org)).data.get('status','active') != 'suspended' && firestore.exists(/databases/(default)/documents/organizations/$(org)/users/$(request.auth.uid)) && firestore.get(/databases/(default)/documents/organizations/$(org)/users/$(request.auth.uid)).data.get('disabled',false) != true; }
-   allow read: if superAdmin() || member();
-   allow write: if member() && request.resource != null && request.resource.size < 5 * 1024 * 1024 && request.resource.contentType.matches('image/.*');
-  }
+  // Access and image decoding are enforced by the authenticated photo callables.
+  // Deny SDK metadata reads too: they can create bearer download tokens.
+  match /{allPaths=**} { allow read, write: if false; }
  }
 }
