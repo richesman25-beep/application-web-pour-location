@@ -69,7 +69,7 @@ export const adminSetSuperAdmin=onCall(options,async request=>{
  await db.runTransaction(async t=>{const [current,status]=await Promise.all([t.get(db.doc(`superAdmins/${actor}`)),t.get(db.doc(`accountStatus/${uid}`))]);if(current.data()?.active!==true)throw new HttpsError('permission-denied','Votre rôle a été retiré.');if(active&&status.data()?.disabled===true)throw new HttpsError('failed-precondition','Ce compte est suspendu.');t.set(db.doc(`superAdmins/${uid}`),{active,email:user.email||'',updatedAt:FieldValue.serverTimestamp(),updatedBy:actor},{merge:true});t.create(db.collection('adminAudit').doc(),audit(actor,active?'superadmin.grant':'superadmin.revoke',uid));});return {ok:true};
 });
 
-export {accountingInitialize,accountingSaveAccount,accountingPost,accountingReverse,accountingSetPeriod,accountingSync} from './accounting';
+export {accountingStatus,accountingInitialize,accountingSaveAccount,accountingPost,accountingReverse,accountingSetPeriod,accountingSync} from './accounting';
 
 export {businessOperation} from './business';
 export {uploadPrivatePhoto,readPrivatePhoto} from './photos';

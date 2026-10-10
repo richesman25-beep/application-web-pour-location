@@ -19,6 +19,7 @@ const demoConfig = {
 };
 
 export function firebaseSettings(env: Environment) {
+  if(env.PROD===true&&['VITE_FIREBASE_PROJECT_ID','VITE_FIREBASE_API_KEY','VITE_FIREBASE_AUTH_DOMAIN','VITE_FIREBASE_STORAGE_BUCKET'].some(key=>typeof env[key]==='string'&&(env[key]==='demo-key'||String(env[key]).startsWith('demo-'))))throw new Error('Configuration Firebase de démonstration interdite dans une compilation publiée. Retirez les variables demo- et demo-key de .env.local ou de Netlify, puis reconstruisez.');
   // Published builds always use real Firebase, never local emulator ports.
   const emulator = env.PROD !== true && env.VITE_USE_EMULATORS !== 'false';
   const defaults = emulator ? demoConfig : liveConfig;

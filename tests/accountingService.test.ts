@@ -1,0 +1,12 @@
+import {describe,it,expect,vi,beforeEach} from 'vitest';
+const mock=vi.hoisted(()=>({online:true,call:vi.fn(),factory:vi.fn()}));
+vi.mock('../src/services/networkService',()=>({networkOnline:()=>mock.online}));
+vi.mock('../src/firebase',()=>({functions:{}}));
+vi.mock('firebase/functions',()=>({httpsCallable:(...args:unknown[])=>{mock.factory(...args);return mock.call;}}));
+import {accountingCall,syncAccounting} from '../src/services/accountingService';
+beforeEach(()=>{mock.online=true;mock.call.mockReset();mock.factory.mockReset();});
+describe('appels comptables',()=>{
+ it('n’appelle pas le serveur hors connexion et conserve l’organisation choisie',async()=>{mock.online=false;await expect(accountingCall('accountingInitialize','org')).rejects.toThrow('connexion Internet');expect(mock.call).not.toHaveBeenCalled();mock.online=true;mock.call.mockResolvedValue({data:{added:27}});expect(await accountingCall('accountingInitialize','org',{org:'autre'})).toEqual({added:27});expect(mock.call).toHaveBeenCalledWith({org:'org'});});
+ it('distingue fonction absente, réseau, erreur interne et pièce introuvable',async()=>{for(const [name,code,message,expected] of [['accountingInitialize','not-found','NOT_FOUND','introuvable'],['accountingInitialize','unavailable','UNAVAILABLE','temporairement inaccessible'],['accountingPost','internal','INTERNAL','journaux Firebase'],['accountingReverse','not-found','Écriture introuvable.','Écriture introuvable.'],['accountingPost','deadline-exceeded','','peut avoir été enregistrée']]){mock.call.mockRejectedValue({code:`functions/${code}`,message});await expect(accountingCall(name,'org')).rejects.toThrow(expected);}});
+ it('préserve les refus du serveur et traite la pagination sans doublon',async()=>{mock.call.mockRejectedValue({code:'functions/permission-denied',message:'Confirmez votre adresse email.'});await expect(accountingCall('accountingInitialize','org')).rejects.toThrow('Confirmez');mock.call.mockResolvedValueOnce({data:{created:25,adjusted:0,unchanged:0,errors:[],nextCursor:'INV-25'}}).mockResolvedValueOnce({data:{created:1,adjusted:1,unchanged:0,errors:[],nextCursor:null}}).mockResolvedValueOnce({data:{created:2,adjusted:0,unchanged:1,errors:[],nextCursor:null}});expect(await syncAccounting('org',()=>{})).toEqual({created:28,adjusted:1,unchanged:1,errors:[]});expect(mock.call.mock.calls.slice(1)).toEqual([[{org:'org',stage:'invoices',cursor:null}],[{org:'org',stage:'invoices',cursor:'INV-25'}],[{org:'org',stage:'payments',cursor:null}]]);});
+});

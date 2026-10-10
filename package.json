@@ -17,7 +17,8 @@
     "android:open": "cap open android",
     "android:apk": "node scripts/android-build.mjs debug",
     "android:validate": "node scripts/android-build.mjs validation",
-    "android:bundle": "node scripts/android-build.mjs release"
+    "android:bundle": "node scripts/android-build.mjs release",
+    "check:accounting": "npm run build:server && node scripts/check-accounting-deployment.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.3",
