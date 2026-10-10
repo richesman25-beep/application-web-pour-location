@@ -1,4 +1,4 @@
-# Validation Android — 9 octobre 2026
+# Validation Android — 10 octobre 2026
 
 | Contrôle | Résultat |
 | --- | --- |
@@ -26,10 +26,12 @@ La variante validation reprend les optimisations release (R8 et suppression de r
 
 Artefacts livrés :
 
-- `downloads/LOKASYON-LAKAY-test.apk` — version 1.1.1/code 3, **9 657 147 octets**, clé debug locale, Android 7 ou plus récent. Contient les dernières améliorations d’interface, de facture et de saisie numérique.
+- `downloads/LOKASYON-LAKAY-test.apk` — version 1.1.2/code 4, **9 516 757 octets**, clé debug locale, Android 7 ou plus récent. Contient les dernières améliorations d’interface, de facture et de saisie numérique.
 - `downloads/LOKASYON-LAKAY-validation.aab` — version 1.1.1-validation/code 3, **6 351 535 octets**, clé debug, API 36. Ne s’installe pas directement et ne doit pas être utilisé comme release Play.
 - Fichiers `.sha256` à côté des artefacts pour vérifier les téléchargements.
 
 Non exécutés : installation et recette sur un téléphone/émulateur Android, contrôle réel des gestes/clavier/zones système, accès aux services Firebase de production, signature avec votre future clé d’envoi, test interne et rapport de pré-lancement Play. Les tests offline sont des tests navigateur sur émulateurs Firebase, pas des tests instrumentés Android. La clé de production et les pages publiques de confidentialité/suppression sont encore à fournir selon [GOOGLE_PLAY.md](GOOGLE_PLAY.md).
 
 Corrections de sécurité du 9 octobre : mutations métier et photos privées côté serveur, purge locale protégée, dépendances actualisées. 15 tests backend et 2 parcours de confidentialité supplémentaires réussis. Les services et règles doivent être déployés suivant [SECURITY_MIGRATION.md](SECURITY_MIGRATION.md) ; ces fichiers Android ne les déploient pas.
+
+Mise à jour APK du 10 octobre : version 1.1.2/code 4, confirmation email et récupération du mot de passe. Le nom du fichier de release reste `LOKASYON-LAKAY-test.3.apk`. Le bundle AAB de validation reste celui de la version 1.1.1 ; il n’a pas été reconstruit pour cette mise à jour APK.
