@@ -31,3 +31,7 @@ Le code est corrigé ; aucune commande ci-dessous n’a été exécutée en prod
 9. Surveiller les refus serveur, erreurs photo, coûts/latence et conflits. Tester séparément les politiques MFA/App Check/CSP avant de les imposer. Ne pas réouvrir les écritures métier pour contourner une erreur.
 
 Les fichiers APK/AAB de `downloads` sont signés pour test/validation. Créer la clé d’envoi Google Play dans Android Studio suivant GOOGLE_PLAY.md ; ne jamais publier une clé privée. La compatibilité et les gestes Android doivent encore être testés sur appareil.
+
+## Confirmation email (10 octobre 2026)
+
+Les comptes Firebase non vérifiés, y compris les super-admins, doivent confirmer leur email. Publier le nouvel écran web et prévoir une mise à jour Android avant d’imposer les nouvelles règles. Aucun compte ou document historique n’est supprimé. Voir AUTHENTIFICATION.md pour les modèles email et les tests de livraison en staging.

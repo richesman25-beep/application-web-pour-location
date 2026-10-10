@@ -9,6 +9,7 @@ const options={region:'us-central1',maxInstances:5};
 async function requireSuperAdmin(request:CallableRequest){
  if(!request.auth)throw new HttpsError('unauthenticated','Connectez-vous pour continuer.');
  const [record,user,status]=await Promise.all([db.doc(`superAdmins/${request.auth.uid}`).get(),auth.getUser(request.auth.uid),db.doc(`accountStatus/${request.auth.uid}`).get()]);
+ if(!user.emailVerified)throw new HttpsError('permission-denied','Confirmez votre adresse email.');
  if(!canManage(record.data(),user.disabled||status.data()?.disabled===true))throw new HttpsError('permission-denied','Accès réservé aux super-administrateurs actifs.');
  return request.auth.uid;
 }

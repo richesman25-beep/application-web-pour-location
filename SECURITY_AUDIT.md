@@ -61,3 +61,7 @@ Reproduction : `npm test`, `npm run test:server`, puis lancer les émulateurs et
 La CLI Firebase n’est pas authentifiée : aucun déploiement possible dans cette session. Les règles actuellement publiées, IAM/ACL Storage, App Check, MFA, restrictions de clé, quotas et sauvegardes réelles n’ont pas été contrôlés. Les incohérences historiques doivent être examinées, pas réparées arbitrairement. Les anciens APK doivent être mis à jour avant fermeture des écritures SDK.
 
 Pas de test instrumenté sur appareil Android, signature Play de production ou publication de release GitHub. Suivre **SECURITY_MIGRATION.md** avant mise en service. Ce rapport ne constitue pas une certification de sécurité.
+
+## Complément du 10 octobre 2026 — validation des comptes
+
+Confirmation email requise dans Firestore et les fonctions métier/photos/comptabilité/super-admin, écran de renvoi et actualisation du jeton, récupération par email Firebase. Le contrôle backend relit le compte Firebase, même si un ancien jeton indique encore une adresse vérifiée. 17 tests de règles et 5 tests d’intégration Functions réussis, dont refus des comptes non confirmés. Le test navigateur consomme les codes de l’émulateur et vérifie connexion avec le nouveau mot de passe ; livraison réelle d’email non testée. La maintenance existante dispose de boutons visibles d’activation et de remise en ligne, testés dans la console super-admin. Voir AUTHENTIFICATION.md.

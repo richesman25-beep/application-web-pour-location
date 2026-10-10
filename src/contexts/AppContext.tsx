@@ -14,7 +14,7 @@ export function Provider({children}:{children:ReactNode}){
  useEffect(()=>onSnapshot(doc(db,'platform','settings'),s=>setSite({...siteDefaults,...s.data()}),()=>{}),[]);
  useEffect(()=>onAuthStateChanged(auth,u=>{setLoading(!!u);setUser(u);setReady(true);setData({});setSettings(defaults);setRole('');setSuperAdmin(false);setAccessError('');setError('');}),[]);
  useEffect(()=>{
-  if(!user){setLoading(false);return;}
+  if(!user||!user.emailVerified){setLoading(false);return;}
   let alive=true;const stops:(()=>void)[]=[];setLoading(true);
   const timeout=setTimeout(()=>{if(alive){setError('Firebase ne répond pas. Vérifiez les services Firebase et la configuration réseau.');setLoading(false);}},15000);
   let suspended=false,disabled=false,memberDisabled=false;

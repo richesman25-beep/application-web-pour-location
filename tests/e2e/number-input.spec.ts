@@ -1,3 +1,4 @@
+import {verifyAccount} from './verify-account';
 import {test,expect} from '@playwright/test';
 
 test('saisie des montants : effacer zéro, décimales et tarifs automatiques',async({page})=>{
@@ -5,7 +6,7 @@ test('saisie des montants : effacer zéro, décimales et tarifs automatiques',as
  await page.getByRole('button',{name:'Créer un compte administrateur'}).click();
  await page.getByLabel('Email',{exact:false}).fill(`number-input-${Date.now()}@example.com`);
  await page.getByLabel('Mot de passe').fill('Test123456!');
- await page.getByRole('button',{name:'Créer mon compte'}).click();
+ await page.getByRole('button',{name:'Créer mon compte'}).click();await verifyAccount(page);
  await expect(page.getByRole('heading',{name:'Votre activité, en un coup d’œil.'})).toBeVisible();
  await page.goto('/settings');
  await page.getByRole('button',{name:'Charger les données de démonstration'}).click();

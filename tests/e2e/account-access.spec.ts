@@ -1,0 +1,15 @@
+import {test,expect} from '@playwright/test';
+import {verifyAccount} from './verify-account';
+import {createRequire} from 'node:module';
+const require=createRequire(new URL('../../functions/package.json',import.meta.url));
+process.env.FIRESTORE_EMULATOR_HOST='127.0.0.1:8080';process.env.FIREBASE_AUTH_EMULATOR_HOST='127.0.0.1:9099';
+const {initializeApp,getApps}=require('firebase-admin/app'),{getAuth}=require('firebase-admin/auth'),{getFirestore}=require('firebase-admin/firestore');
+const app=getApps().find((a:any)=>a.name==='account-access')||initializeApp({projectId:'demo-lokasyon'},'account-access'),db=getFirestore(app),auth=getAuth(app);
+test('confirmation obligatoire, renvoi et récupération du mot de passe via emails Firebase',async({page,request})=>{
+ const email=`verify-${Date.now()}@example.com`;await page.goto('/login');await page.getByRole('button',{name:'Créer un compte administrateur'}).click();await page.getByLabel('Email',{exact:false}).fill(email);await page.getByLabel('Mot de passe').fill('Test123456!');await page.getByRole('button',{name:'Créer mon compte'}).click();await expect(page.getByRole('heading',{name:'Confirmez votre adresse email'})).toBeVisible();
+ const u=await auth.getUserByEmail(email);expect((await db.doc(`organizations/${u.uid}`).get()).exists).toBe(false);
+ await page.getByRole('button',{name:'J’ai confirmé mon email'}).click();await expect(page.getByRole('status')).toContainText('n’est pas encore confirmée');await page.getByRole('button',{name:'Renvoyer l’email de confirmation'}).click();await expect(page.getByRole('status')).toContainText('Email de confirmation envoyé');await verifyAccount(page);await expect(page.getByRole('heading',{name:'Votre activité, en un coup d’œil.'})).toBeVisible();expect((await db.doc(`organizations/${u.uid}`).get()).exists).toBe(true);
+ await page.getByRole('button',{name:'Déconnexion',exact:true}).first().click();await page.getByRole('button',{name:'Mot de passe oublié ?'}).click();await page.getByLabel('Email',{exact:false}).fill(email);await page.getByRole('button',{name:'Envoyer le lien de récupération'}).click();await expect(page.getByRole('status')).toContainText('Si un compte correspond');
+ const codes=await (await request.get('http://127.0.0.1:9099/emulator/v1/projects/demo-lokasyon/oobCodes')).json();const code=codes.oobCodes.filter((c:any)=>c.email===email&&c.requestType==='PASSWORD_RESET').at(-1);expect(code).toBeTruthy();const reset=await request.post('http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=demo-key',{data:{oobCode:code.oobCode,newPassword:'Changed123456!'}});expect(reset.ok()).toBe(true);
+ await page.getByRole('button',{name:'Retour à la connexion'}).click();await page.getByLabel('Email',{exact:false}).fill(email);await page.getByLabel('Mot de passe').fill('Changed123456!');await page.getByRole('button',{name:'Se connecter',exact:true}).click();await expect(page.getByRole('heading',{name:'Votre activité, en un coup d’œil.'})).toBeVisible();
+});

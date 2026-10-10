@@ -1,3 +1,4 @@
+import {verifyAccount} from './verify-account';
 import {test,expect} from '@playwright/test';
 
 test('tableau de bord : petits écrans, navigation et raccourcis',async({page})=>{
@@ -6,7 +7,7 @@ test('tableau de bord : petits écrans, navigation et raccourcis',async({page})=
  await page.getByRole('button',{name:'Créer un compte administrateur'}).click();
  await page.getByLabel('Email',{exact:false}).fill(`dashboard-ui-${Date.now()}@example.com`);
  await page.getByLabel('Mot de passe').fill('Test123456!');
- await page.getByRole('button',{name:'Créer mon compte'}).click();
+ await page.getByRole('button',{name:'Créer mon compte'}).click();await verifyAccount(page);
  await expect(page.getByRole('heading',{name:'Votre activité, en un coup d’œil.'})).toBeVisible();
  for(const width of [320,360,375,390,414,768,1024,1280,1440]){
   await page.setViewportSize({width,height:900});

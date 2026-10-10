@@ -107,7 +107,7 @@ async function seedNow(op:Operation,org:string){
 
 export const businessOperation=onCall({region:'us-central1',maxInstances:5,timeoutSeconds:120},async request=>{
  if(!request.auth)throw new HttpsError('unauthenticated','Connectez-vous pour continuer.');
- if((await getAuth().getUser(request.auth.uid)).disabled)throw new HttpsError('permission-denied','Compte suspendu.');
+ const account=await getAuth().getUser(request.auth.uid);if(!account.emailVerified)throw new HttpsError('permission-denied','Confirmez votre adresse email.');if(account.disabled)throw new HttpsError('permission-denied','Compte suspendu.');
  try{
   const op=normalizeOperation(request.data,request.auth.uid,new Date());
   switch(op.kind){
